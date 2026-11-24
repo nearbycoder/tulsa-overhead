@@ -33,7 +33,7 @@ jobs:
         run: gh release download v0.1.0 --repo "$GITHUB_REPOSITORY" --pattern Tulsa-Overhead-Overview.zip --dir "$RUNNER_TEMP"
       - name: Build the site and playable game
         run: python3 tools/build_pages.py "$RUNNER_TEMP/Tulsa-Overhead-Overview.zip"
-      - uses: actions/upload-pages-artifact@v4
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: build/pages
 
@@ -49,4 +49,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
