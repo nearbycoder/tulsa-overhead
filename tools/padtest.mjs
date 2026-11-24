@@ -1,0 +1,80 @@
+// Drives the game with a virtual controller (navigator.getGamepads is faked) and takes screenshots.
+//   node tools/padtest.mjs outdir [xbox|ps]
+import puppeteer from 'puppeteer-core';
+import fs from 'fs';
+const out = process.argv[2] || 'padtest';
+const kind = process.argv[3] || 'xbox';
+fs.mkdirSync(out, { recursive: true });
+const browser = await puppeteer.launch({ executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: 'new', args: ['--autoplay-policy=no-user-gesture-required'], defaultViewport: { width: 1280, height: 720 } });
+const page = await browser.newPage();
+const logs = [];
+page.on('pageerror', (e) => logs.push('[pageerror] ' + e.message + ' ' + (e.stack || '').split('\n')[1]));
+page.on('console', (m) => { if (m.type() === 'error' && !/404|Failed to load/.test(m.text())) logs.push('[err] ' + m.text()); });
+await page.evaluateOnNewDocument((kind) => {
+  const id = kind === 'ps' ? 'DualSense Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 0ce6)' : 'Xbox Wireless Controller (STANDARD GAMEPAD Vendor: 045e Product: 0b13)';
+  const pad = { id, index: 0, connected: true, mapping: 'standard', timestamp: 0, axes: [0, 0, 0, 0], buttons: Array.from({ length: 17 }, () => ({ pressed: false, touched: false, value: 0 })) };
+  window.__pad = pad;
+  Object.defineProperty(Navigator.prototype, 'getGamepads', { value: () => [pad, null, null, null], configurable: true });
+  window.__connect = () => { const e = new Event('gamepadconnected'); e.gamepad = pad; window.dispatchEvent(e); };
+}, kind);
+const B = { A: 0, B: 1, X: 2, Y: 3, LB: 4, RB: 5, LT: 6, RT: 7, VIEW: 8, MENU: 9, UP: 12, DOWN: 13, LEFT: 14, RIGHT: 15 };
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const press = async (name, ms = 90) => {
+  await page.evaluate((i) => { const b = window.__pad.buttons[i]; b.pressed = true; b.value = 1; }, B[name]);
+  await sleep(ms);
+  await page.evaluate((i) => { const b = window.__pad.buttons[i]; b.pressed = false; b.value = 0; }, B[name]);
+  await sleep(120);
+};
+const shot = (n) => page.screenshot({ path: `${out}/${n}.png` });
+const focused = () => page.evaluate(() => { const e = document.activeElement; return e ? (e.textContent || e.type || e.tagName).trim().slice(0, 30) : null; });
+
+await page.goto('http://localhost:8137/index.html', { waitUntil: 'load' });
+await sleep(8000);
+await page.evaluate(() => window.__connect());
+await sleep(400);
+await shot('01_title');
+console.log('title focus:', await focused());
+await press('DOWN'); console.log('title focus after down:', await focused());
+await press('A'); await sleep(500);
+console.log('opened:', await page.evaluate(() => document.querySelector('.screen:last-child h1')?.textContent));
+await press('RB'); await press('RB'); await sleep(200);
+await shot('02_settings_audio');
+await press('DOWN'); await press('DOWN');
+const before = await page.evaluate(() => JSON.parse(localStorage.getItem('gtpolly.settings.v1') || '{}').musicVolume);
+await press('LEFT'); await press('LEFT'); await press('LEFT');
+const after = await page.evaluate(() => JSON.parse(localStorage.getItem('gtpolly.settings.v1') || '{}').musicVolume);
+console.log('focus:', await focused(), 'music volume', before, '->', after);
+await press('RB'); await press('RB'); await sleep(300);
+await shot('03_settings_controls');
+await press('B'); await sleep(400);
+console.log('after B:', await page.evaluate(() => document.querySelector('.screen:last-child h1')?.textContent), 'focus', await focused());
+console.log('focus:', await focused());
+await press('A'); await sleep(9000);
+await shot('04_cutscene');
+for (let i = 0; i < 9; i++) { await press('A'); await sleep(700); }
+await sleep(1500);
+await shot('05_ingame_prompt');
+console.log('hud msgs:', await page.evaluate(() => __game.hud.msgs.map((m) => m.text)));
+await press('MENU'); await sleep(500);
+await shot('06_pause');
+console.log('pause open:', await page.evaluate(() => document.querySelector('.screen:last-child h1')?.textContent), 'focus', await focused());
+await press('DOWN'); await press('DOWN'); await press('A'); await sleep(500);
+await shot('07_story');
+await press('B'); await sleep(300); await press('B'); await sleep(300);
+console.log('paused after closing:', await page.evaluate(() => __game.paused), 'ui open', await page.evaluate(() => document.querySelectorAll('#ui .screen').length));
+await press('VIEW'); await sleep(1200);
+await page.evaluate(() => { window.__pad.axes[0] = 0.8; });
+await sleep(600);
+await page.evaluate(() => { window.__pad.axes[0] = 0; });
+await press('A'); await sleep(300);
+await shot('08_map');
+console.log('waypoint:', await page.evaluate(() => __game.waypoint && __game.waypoint.map(Math.round)));
+await press('B'); await sleep(400);
+console.log('map closed:', await page.evaluate(() => document.querySelectorAll('#ui .screen, #ui .mapview').length));
+// walk with the stick, check RT vs RB context
+await page.evaluate(() => { window.__pad.axes[1] = -1; });
+await sleep(1000);
+await page.evaluate(() => { window.__pad.axes[1] = 0; });
+console.log('player moved:', await page.evaluate(() => [Math.round(__game.player.x), Math.round(__game.player.y)]), 'device', await page.evaluate(() => document.body.classList.contains('pad')));
+console.log(logs.slice(0, 10).join('\n'));
+await browser.close();

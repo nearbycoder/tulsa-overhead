@@ -1,0 +1,15 @@
+{
+  "name": "tulsa-overhead",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Tulsa Overhead - an open-world top-down crime game set in the Tulsa metro, built with sprite stacking.",
+  "scripts": {
+    "start": "node tools/serve.mjs",
+    "shot": "node tools/shot.mjs",
+    "package": "python3 tools/package_game.py"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^23.11.1"
+  }
+}

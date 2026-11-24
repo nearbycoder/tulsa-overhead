@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GTPolly peds</title>
+<style>
+  :root { --bg: #17191d; --panel: #22252b; --text: #d9dce1; --muted: #8e96a3; --accent: #e0574a; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 12px/1.35 system-ui, -apple-system, sans-serif; }
+  header { position: sticky; top: 0; z-index: 2; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 6px 12px; background: var(--panel); border-bottom: 1px solid #000; }
+  header b { color: var(--accent); margin-right: 6px; }
+  header button, header select, header input { background: #30343c; color: var(--text); border: 1px solid #454b55; border-radius: 4px; padding: 3px 8px; font: inherit; }
+  header button[aria-pressed="true"] { background: #4a2f2c; border-color: var(--accent); }
+  #stats { color: var(--muted); margin-left: auto; }
+  section { padding: 4px 12px 8px; }
+  section[hidden] { display: none; }
+  h2 { font-size: 12px; font-weight: 600; margin: 6px 0 4px; color: #9fb3c8; letter-spacing: .02em; }
+  canvas { display: block; image-rendering: pixelated; }
+  #err { display: none; position: fixed; inset: auto 12px 12px 12px; z-index: 9; background: #5a1010; color: #fff; padding: 10px 12px; border: 2px solid #ff6b6b; font: 12px/1.4 ui-monospace, monospace; white-space: pre-wrap; max-height: 40vh; overflow: auto; }
+</style>
+</head>
+<body>
+<div id="err"></div>
+<header>
+  <b>GTPolly · peds</b>
+  <button id="bAnim" aria-pressed="true">Animate</button>
+  <label>Frame <select id="sFrame"><option>walk</option><option>run</option><option>idle</option><option>aim</option><option>punch</option><option>dead</option><option>sit</option></select></label>
+  <button id="bSpin" aria-pressed="false">Spin</button>
+  <label>View <select id="sView"><option>all</option><option>specials</option><option>crowd</option><option>frames</option><option>overhead</option><option>strip</option></select></label>
+  <label>Frames model <input id="iModel" type="number" min="0" value="0" style="width:64px"></label>
+  <span id="stats">loading…</span>
+</header>
+<section id="s-specials"><h2>Specials — player, services, factions, story cast (squash 0.75, spacing 1, scale 3)</h2><canvas id="c-specials"></canvas></section>
+<section id="s-overhead"><h2>Near-overhead camera (squash 1.0)</h2><canvas id="c-overhead"></canvas></section>
+<section id="s-frames"><h2 id="h-frames">Frames</h2><canvas id="c-frames"></canvas></section>
+<section id="s-strip"><h2 id="h-strip">Raw slice strips (z = 0 left → top right)</h2><canvas id="c-strip"></canvas></section>
+<section id="s-crowd"><h2>Crowd — 120 random civilians (asphalt / sidewalk / grass rows)</h2><canvas id="c-crowd"></canvas></section>
+<script type="module">
+const errBox = document.getElementById('err');
+function showErr(msg) { errBox.style.display = 'block'; errBox.textContent += msg + '\n'; }
+window.onerror = (m, src, line, col, e) => { showErr(`${m} @ ${src}:${line}:${col}\n${e && e.stack || ''}`); };
+window.addEventListener('unhandledrejection', (e) => showErr('Unhandled: ' + (e.reason && e.reason.stack || e.reason)));
+
+let P;
+try { P = await import('../src/data/peds.js'); } catch (e) { showErr('Import failed: ' + (e.stack || e)); throw e; }
+
+// ---------------------------------------------------------------- params
+const q = new URLSearchParams(location.search);
+const state = {
+  anim: q.get('anim') !== '0' && !q.has('t'),
+  frame: q.get('frame') || 'walk',
+  t: q.has('t') ? parseFloat(q.get('t')) : 0,
+  spin: q.get('spin') === '1',
+  view: q.get('view') || 'all',
+  scale: Math.max(1, parseInt(q.get('scale') || '3', 10)),
+  heading: parseFloat(q.get('heading') || '0'),
+  model: parseInt(q.get('model') || '0', 10),
+};
+const $ = (id) => document.getElementById(id);
+$('sFrame').value = state.frame; $('sView').value = state.view; $('iModel').value = state.model;
+$('bAnim').setAttribute('aria-pressed', state.anim); $('bSpin').setAttribute('aria-pressed', state.spin);
+
+// ---------------------------------------------------------------- sprite cache + timing
+const { w: SW_, h: SH_, count: COUNT } = P.PED_SPRITE;
+const sprites = new Map();
+let buildMs = 0, built = 0;
+function spritesOf(i) {
+  let s = sprites.get(i);
+  if (!s) { const t0 = performance.now(); s = P.buildPedSprites(i); buildMs += performance.now() - t0; built++; sprites.set(i, s); }
+  return s;
+}
+const FRAME_N = { idle: 1, walk: 6, run: 6, aim: 1, punch: 3, dead: 1, sit: 1 };
+const pixCache = new Map();
+function framePixels(i, name, k) {
+  const key = i + '|' + name + '|' + k;
+  let px = pixCache.get(key);
+  if (px) return px;
+  const s = spritesOf(i);
+  const f = s.frames[name];
+  const strip = Array.isArray(f) ? f[k % f.length] : f;
+  if (strip.width !== s.w * s.count || strip.height !== s.h) throw new Error(`strip size mismatch for model ${i} ${name}`);
+  px = strip.getContext('2d').getImageData(0, 0, strip.width, strip.height).data;
+  pixCache.set(key, px);
+  return px;
+}
+
+// ---------------------------------------------------------------- stack rasterizer (1 art px buffer, then outline, then integer scale)
+const DIAG = Math.ceil(Math.hypot(SW_, SH_));
+function bufSize(squash, spacing) {
+  return { bw: DIAG + 4, bh: Math.ceil(DIAG * squash) + Math.ceil((COUNT - 1) * spacing) + 4 };
+}
+function renderStack(px, turn, squash, spacing) {
+  const { bw, bh } = bufSize(squash, spacing);
+  const out = new Uint8ClampedArray(bw * bh * 4);
+  const ox = Math.floor(bw / 2), oy = bh - 2 - Math.ceil((DIAG * squash) / 2);
+  const ca = Math.cos(turn), sa = Math.sin(turn);
+  const pcx = (SW_ - 1) / 2, pcy = (SH_ - 1) / 2, stripW = SW_ * COUNT, R = DIAG / 2 + 1;
+  // soft ground shadow (engine draws its own; here just for grounding)
+  for (let y = -3; y <= 3; y++) for (let x = -5; x <= 5; x++) {
+    if ((x * x) / 25 + (y * y) / 9 > 1) continue;
+    const X = ox + x + 1, Y = oy + Math.round(y * squash) + 1, o = (Y * bw + X) * 4;
+    out[o + 3] = 70;
+  }
+  for (let z = 0; z < COUNT; z++) {
+    const oz = oy - Math.round(z * spacing);
+    const y0 = Math.max(0, Math.floor(oz - R * squash)), y1 = Math.min(bh - 1, Math.ceil(oz + R * squash));
+    for (let Y = y0; Y <= y1; Y++) {
+      const dy = (Y - oz) / squash;
+      for (let X = Math.max(0, ox - R | 0); X <= Math.min(bw - 1, ox + R | 0); X++) {
+        const dx = X - ox;
+        const sx = Math.round(dx * ca + dy * sa + pcx), sy = Math.round(-dx * sa + dy * ca + pcy);
+        if (sx < 0 || sy < 0 || sx >= SW_ || sy >= SH_) continue;
+        const si = (sy * stripW + z * SW_ + sx) * 4;
+        if (px[si + 3] === 0) continue;
+        const o = (Y * bw + X) * 4;
+        out[o] = px[si]; out[o + 1] = px[si + 1]; out[o + 2] = px[si + 2]; out[o + 3] = 255;
+      }
+    }
+  }
+  // one outline around the finished stack (never per slice)
+  const solid = (X, Y) => X >= 0 && Y >= 0 && X < bw && Y < bh && out[(Y * bw + X) * 4 + 3] === 255;
+  const mark = [];
+  for (let Y = 0; Y < bh; Y++) for (let X = 0; X < bw; X++) {
+    if (solid(X, Y)) continue;
+    if (solid(X - 1, Y) || solid(X + 1, Y) || solid(X, Y - 1) || solid(X, Y + 1)) mark.push((Y * bw + X) * 4);
+  }
+  for (const o of mark) { out[o] = 14; out[o + 1] = 13; out[o + 2] = 18; out[o + 3] = 255; }
+  const c = document.createElement('canvas'); c.width = bw; c.height = bh;
+  c.getContext('2d').putImageData(new ImageData(out, bw, bh), 0, 0);
+  return c;
+}
+const stackCache = new Map();
+function stackImage(i, name, k, turnDeg, squash) {
+  const key = `${i}|${name}|${k}|${turnDeg.toFixed(1)}|${squash}`;
+  let c = stackCache.get(key);
+  if (!c) { c = renderStack(framePixels(i, name, k), (turnDeg * Math.PI) / 180, squash, 1); stackCache.set(key, c); if (stackCache.size > 6000) stackCache.clear(); }
+  return c;
+}
+
+// ---------------------------------------------------------------- grids
+const BG = { asphalt: '#4a4d52', sidewalk: '#8f8b82', grass: '#56703f', dark: '#2a2d33' };
+function makeGrid(canvasId, items, cols, squash, opts = {}) {
+  const S = state.scale;
+  const { bw, bh } = bufSize(squash, 1);
+  const labelH = opts.labels ? 14 : 0;
+  const cw = bw * S, ch = bh * S + labelH;
+  if (opts.fit) cols = Math.max(1, Math.min(cols, Math.floor((innerWidth - 28) / cw)));
+  const rows = Math.ceil(items.length / cols);
+  const cv = $(canvasId);
+  cv.width = cw * cols; cv.height = ch * rows;
+  return { cv, ctx: cv.getContext('2d'), items, cols, cw, ch, squash, labelH, S, opts };
+}
+function frameFor(name, time, offset) {
+  const n = FRAME_N[name];
+  if (n === 1) return 0;
+  if (!state.anim) return Math.floor((((state.t % 1) + 1) % 1) * n);
+  const fps = name === 'run' ? 12 : name === 'punch' ? 6 : 8;
+  return Math.floor(time * fps + offset) % n;
+}
+function drawGrid(g, time) {
+  const { ctx, items, cols, cw, ch, squash, S } = g;
+  ctx.imageSmoothingEnabled = false;
+  items.forEach((it, k) => {
+    const cx = (k % cols) * cw, cy = Math.floor(k / cols) * ch;
+    ctx.fillStyle = BG[it.bg || 'asphalt'];
+    ctx.fillRect(cx, cy, cw, ch);
+    ctx.strokeStyle = 'rgba(0,0,0,.25)'; ctx.strokeRect(cx + 0.5, cy + 0.5, cw - 1, ch - 1);
+    const name = it.frame || state.frame;
+    const kf = it.k !== undefined ? it.k : frameFor(name, time, it.phase || 0);
+    let turn = it.turn + state.heading;
+    if (state.spin && it.spin !== false) turn += time * 40;
+    turn = Math.round(turn * 2) / 2;
+    const img = stackImage(it.i, name, kf, turn, it.squash || squash);
+    ctx.drawImage(img, cx, cy, img.width * S, img.height * S);
+    if (g.labelH) {
+      ctx.fillStyle = 'rgba(0,0,0,.55)'; ctx.fillRect(cx, cy + ch - g.labelH, cw, g.labelH);
+      ctx.fillStyle = it.hero ? '#ffb4a8' : '#e7e9ee'; ctx.font = '10px system-ui, sans-serif';
+      ctx.fillText(it.label.slice(0, Math.floor(cw / 5.6)), cx + 3, cy + ch - 4);
+    }
+  });
+}
+
+function drawStrips() {
+  const mi = Math.min(Math.max(0, state.model | 0), P.pedModelCount() - 1);
+  const s = spritesOf(mi), S = Math.max(2, state.scale), gap = 1;
+  const names = (q.get('frames') || 'idle,walk0,run1,dead,sit').split(',');
+  const cv = $('c-strip');
+  cv.width = (s.w + gap) * s.count * S; cv.height = names.length * (s.h + 3) * S;
+  const ctx = cv.getContext('2d'); ctx.imageSmoothingEnabled = false;
+  $('h-strip').textContent = `Raw strips of #${mi} ${P.getPedModel(mi).name}: ${names.join(', ')}`;
+  names.forEach((nm, r) => {
+    const base = nm.replace(/\d+$/, ''), k = parseInt(nm.slice(base.length) || '0', 10);
+    const f = s.frames[base], strip = Array.isArray(f) ? f[k] : f;
+    for (let z = 0; z < s.count; z++) {
+      const x = z * (s.w + gap) * S, y = r * (s.h + 3) * S;
+      ctx.fillStyle = z % 2 ? '#3b3f46' : '#34383e'; ctx.fillRect(x, y, s.w * S, s.h * S);
+      ctx.drawImage(strip, z * s.w, 0, s.w, s.h, x, y, s.w * S, s.h * S);
+    }
+  });
+}
+const grids = [];
+function setup() {
+  grids.length = 0;
+  for (const s of ['specials', 'overhead', 'frames', 'crowd']) $('s-' + s).hidden = !(state.view === 'all' || state.view === s);
+  $('s-strip').hidden = state.view !== 'strip';
+  if (state.view === 'strip') drawStrips();
+  const S = P.SPECIAL;
+  const fixedTurn = q.has('turn') ? parseFloat(q.get('turn')) : null;
+  const specials = Object.entries(S).map(([key, i], k) => ({ i, turn: fixedTurn ?? [20, -35, 160, 60, -120, 215, 95][k % 7] - k * 3, label: P.getPedModel(i).name, phase: k * 0.37, hero: key === 'player' }));
+  if (!$('s-specials').hidden) grids.push(makeGrid('c-specials', specials, 14, 0.75, { labels: true, fit: true }));
+
+  const ov = [S.player, S.cop, S.swat, S.firefighter, S.gusher, S.portrats, S.riders, S.wrenches];
+  for (let k = 0; k < 8; k++) ov.push(P.VARIANTS.cop.length * 10 + 30 + k * 61);
+  const overhead = ov.map((i, k) => ({ i, turn: k * 45, label: P.getPedModel(i).name, bg: k % 3 === 1 ? 'sidewalk' : 'asphalt', phase: k * 0.5 }));
+  if (!$('s-overhead').hidden) grids.push(makeGrid('c-overhead', overhead, 16, 1.0, { labels: true, fit: true }));
+
+  const mi = Math.min(Math.max(0, state.model | 0), P.pedModelCount() - 1);
+  $('h-frames').textContent = `Every frame of #${mi} ${P.getPedModel(mi).name}: side view (turn -90°), front 3/4 (turn 25°), overhead squash 1 (turn -90°)`;
+  const fl = [];
+  for (const [name, n] of Object.entries(FRAME_N)) for (let k = 0; k < n; k++) fl.push([name, k]);
+  const frames = [];
+  for (const [turn, sq, bg] of [[-90, 0.75, 'asphalt'], [25, 0.75, 'sidewalk'], [-90, 1.0, 'asphalt']]) {
+    for (const [name, k] of fl) frames.push({ i: mi, frame: name, k, turn, squash: sq, label: name + (FRAME_N[name] > 1 ? k : ''), bg, spin: false });
+    while (frames.length % 19) frames.push(frames[frames.length - 1]);
+  }
+  if (!$('s-frames').hidden) grids.push(makeGrid('c-frames', frames, 19, 1.0, { labels: true, fit: true }));
+
+  const first = Math.max(...Object.values(P.VARIANTS).flat()) + 1, total = P.pedModelCount();
+  const crowd = [];
+  const ids = q.has('ids') ? q.get('ids').split(',').map(Number) : null;
+  const byArch = q.get('arch');
+  const pool = ids || (byArch ? P.PED_MODELS.filter((m) => m.archetype === byArch).map((m) => m.id) : null);
+  for (let k = 0; k < (pool ? pool.length : 120); k++) {
+    const i = pool ? pool[k] : first + Math.floor((k * (total - first)) / 120);
+    const row = Math.floor(k / 15);
+    crowd.push({ i, turn: fixedTurn ?? (k * 47) % 360, label: `${i} ${P.getPedModel(i).archetype}`, bg: ['asphalt', 'asphalt', 'sidewalk', 'grass'][row % 4], phase: (k * 7) % 6 });
+  }
+  if (!$('s-crowd').hidden) grids.push(makeGrid('c-crowd', crowd, 15, 0.75, { labels: state.view !== 'crowd' || !!pool, fit: true }));
+}
+
+// timing probe: build 60 distinct models fresh (not cached) for an honest per-model number
+const probe = performance.now();
+for (let k = 0; k < 60; k++) P.buildPedSprites(100 + k * 7);
+const probeMs = (performance.now() - probe) / 60;
+console.log(`[ped_preview] buildPedSprites ${probeMs.toFixed(3)} ms/model (60 models)`);
+$('stats').textContent = `${P.pedModelCount()} models · ${P.ARCHETYPES.length} archetypes · ${P.SKIN_TONES.length} skin tones · strip ${SW_}×${SH_}×${COUNT} · buildPedSprites ≈ ${probeMs.toFixed(2)} ms/model`;
+
+setup();
+let t0 = performance.now(), rafId = 0;
+function loop(now) {
+  rafId = 0;
+  const time = (now - t0) / 1000;
+  for (const g of grids) drawGrid(g, time);
+  if (state.anim || state.spin) rafId = requestAnimationFrame(loop);
+}
+const restart = () => { setup(); if (rafId) cancelAnimationFrame(rafId); rafId = requestAnimationFrame(loop); };
+rafId = requestAnimationFrame(loop);
+$('bAnim').onclick = () => { state.anim = !state.anim; $('bAnim').setAttribute('aria-pressed', state.anim); restart(); };
+$('bSpin').onclick = () => { state.spin = !state.spin; $('bSpin').setAttribute('aria-pressed', state.spin); restart(); };
+$('sFrame').onchange = (e) => { state.frame = e.target.value; restart(); };
+$('sView').onchange = (e) => { state.view = e.target.value; restart(); };
+$('iModel').onchange = (e) => { state.model = parseInt(e.target.value, 10) || 0; restart(); };
+window.__pedPreviewReady = true;
+</script>
+</body>
+</html>

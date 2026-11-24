@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GTPolly Audio Lab</title>
+<style>
+  :root { --bg: #14161a; --panel: #1d2026; --line: #2c313a; --ink: #e6e2d8; --dim: #9aa0a8; --acc: #e0a63a; --red: #e0533a; --ok: #6cc26c; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 13px/1.4 ui-monospace, Menlo, Consolas, monospace; }
+  header { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  h1 { font-size: 16px; margin: 0; letter-spacing: .08em; color: var(--acc); }
+  main { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 12px; padding: 12px 16px 40px; }
+  section { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; }
+  section.wide { grid-column: 1 / -1; }
+  h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .12em; color: var(--dim); margin: 0 0 8px; }
+  button { background: #262a32; color: var(--ink); border: 1px solid #3a404b; border-radius: 4px; padding: 4px 8px; margin: 2px; font: inherit; cursor: pointer; }
+  button:hover { border-color: var(--acc); }
+  button.on { background: var(--acc); color: #111; border-color: var(--acc); }
+  button.big { padding: 8px 14px; font-weight: bold; }
+  label { display: flex; align-items: center; gap: 8px; margin: 4px 0; color: var(--dim); }
+  label span.v { width: 44px; text-align: right; color: var(--ink); }
+  input[type=range] { flex: 1; min-width: 80px; }
+  select { background: #262a32; color: var(--ink); border: 1px solid #3a404b; font: inherit; padding: 3px; }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+  .muted { color: var(--dim); }
+  #status { color: var(--dim); }
+  #np { color: var(--acc); min-height: 1.4em; }
+  #pad { width: 100%; height: 160px; background: #101215; border: 1px solid var(--line); border-radius: 4px; cursor: crosshair; display: block; }
+  pre#report { white-space: pre-wrap; background: #0f1113; border: 1px solid var(--line); padding: 10px; border-radius: 6px; max-height: 70vh; overflow: auto; }
+  .pass { color: var(--ok); } .fail { color: var(--red); }
+</style>
+</head>
+<body>
+<header>
+  <h1>GTPOLLY AUDIO LAB</h1>
+  <button id="initBtn" class="big">Start audio</button>
+  <span id="status">not started (click to unlock Web Audio)</span>
+  <a class="muted" href="?selftest=1">run self-test</a>
+</header>
+<main>
+  <section>
+    <h2>Mixer</h2>
+    <div id="vols"></div>
+    <div class="row"><button id="muteBtn">Mute</button><button id="voiceBtn">Test voice duck</button><button id="voiceStop">Stop voice</button></div>
+  </section>
+  <section>
+    <h2>Listener / positional source</h2>
+    <canvas id="pad" width="600" height="160"></canvas>
+    <div class="muted">Listener at centre. Click to place the source (±200 m wide). One-shots, sirens and positional loops use it.</div>
+    <label>zoom <input id="zoom" type="range" min="0.33" max="2" step="0.01" value="1"><span class="v" id="zoomV">1.00</span></label>
+    <label><input type="checkbox" id="usePos"> play one-shots at source position</label>
+  </section>
+  <section class="wide">
+    <h2>One-shots</h2>
+    <div id="sfx" class="row"></div>
+  </section>
+  <section>
+    <h2>Engines</h2>
+    <div class="row"><select id="engSel"></select><button id="engStart">Start</button><button id="engStop">Stop</button><label style="margin:0"><input type="checkbox" id="engPlayer" checked> player car</label></div>
+    <label>rpm <input id="rpm" type="range" min="0" max="1" step="0.001" value="0.1"><span class="v" id="rpmV"></span></label>
+    <label>throttle <input id="thr" type="range" min="0" max="1" step="0.01" value="0.3"><span class="v" id="thrV"></span></label>
+    <label>speed m/s <input id="spd" type="range" min="0" max="60" step="0.1" value="5"><span class="v" id="spdV"></span></label>
+    <label><input type="checkbox" id="engAuto"> auto-rev (accelerate + gear changes)</label>
+    <div class="row"><button id="traffic">Spawn 10 AI cars</button><button id="trafficStop">Clear AI</button><span class="muted" id="engInfo"></span></div>
+  </section>
+  <section>
+    <h2>Sirens</h2>
+    <div class="row"><select id="sirSel"></select><button id="sirStart">Start</button><button id="sirStop">Stop</button></div>
+    <div class="row" id="sirModes"></div>
+    <label>velocity (doppler) <input id="sirVel" type="range" min="-60" max="60" step="1" value="0"><span class="v" id="sirVelV"></span></label>
+    <label><input type="checkbox" id="sirPass"> drive-by (source moves through listener)</label>
+  </section>
+  <section>
+    <h2>Loops</h2>
+    <div id="loops"></div>
+  </section>
+  <section>
+    <h2>Radio</h2>
+    <div id="stations" class="row"></div>
+    <div class="row"><button id="rPrev">&laquo; prev</button><button id="rNext">next &raquo;</button><button id="rOff">off</button><label style="margin:0"><input type="checkbox" id="inCar" checked> in-car EQ</label></div>
+    <div id="np"></div>
+  </section>
+  <section>
+    <h2>Score</h2>
+    <div class="row"><button data-m="title">Title theme</button><button data-m="mission">Mission</button><button data-m="chase">Chase</button><button data-m="stop">Stop</button></div>
+    <label>intensity <input id="mi" type="range" min="0" max="1" step="0.01" value="0.35"><span class="v" id="miV"></span></label>
+  </section>
+  <section class="wide" id="reportBox" hidden>
+    <h2>Self-test</h2>
+    <div id="selftest-result"></div>
+    <pre id="report">running…</pre>
+  </section>
+</main>
+<script type="module">
+import { audio, AudioSys } from '../src/engine/audio.js';
+window.audio = audio;
+const $ = (id) => document.getElementById(id);
+const params = new URLSearchParams(location.search);
+const src = { x: 30, y: 0 };
+let started = false;
+
+async function start() {
+  if (started) return audio.init();
+  started = true;
+  $('status').textContent = 'baking…';
+  const t = performance.now();
+  await audio.init();
+  $('status').textContent = `running @ ${audio.ctx.sampleRate} Hz — baked ${Object.keys(audio.buffers).length} sounds in ${audio.stats.bakeMs} ms (page ${Math.round(performance.now() - t)} ms)`;
+  $('initBtn').classList.add('on');
+  loop();
+}
+$('initBtn').onclick = start;
+
+// ---------- mixer ----------
+for (const k of ['master', 'sfx', 'music', 'voice', 'radio']) {
+  const l = document.createElement('label');
+  l.innerHTML = `${k.padEnd(6, ' ')} <input type="range" min="0" max="1" step="0.01" value="${audio.volumes[k]}"><span class="v">${audio.volumes[k].toFixed(2)}</span>`;
+  const inp = l.querySelector('input'), sp = l.querySelector('span');
+  inp.oninput = () => { audio.setVolumes({ [k]: +inp.value }); sp.textContent = (+inp.value).toFixed(2); };
+  $('vols').appendChild(l);
+}
+$('muteBtn').onclick = () => { audio.setMuted(!audio.muted); $('muteBtn').classList.toggle('on', audio.muted); };
+let voiceUrl = null;
+function voiceTestUrl() {
+  if (voiceUrl) return voiceUrl;
+  // Build a fake "dialogue" clip from baked sounds (WAV blob) to exercise playVoice + ducking.
+  const parts = ['ouch', 'scream_m', 'ouch'].map((n) => audio.buffers[n][0]), sr = parts[0].sampleRate;
+  const len = parts.reduce((s, b) => s + b.length + sr * 0.25, 0), b = new AudioBuffer({ length: Math.ceil(len), sampleRate: sr, numberOfChannels: 1 }), d = b.getChannelData(0);
+  let o = 0; for (const p of parts) { d.set(p.getChannelData(0), o); o += p.length + sr * 0.25; }
+  voiceUrl = URL.createObjectURL(new Blob([AudioSys.encodeWAV(b)], { type: 'audio/wav' }));
+  return voiceUrl;
+}
+$('voiceBtn').onclick = async () => { await start(); $('voiceBtn').classList.add('on'); await audio.playVoice(voiceTestUrl()); $('voiceBtn').classList.remove('on'); };
+$('voiceStop').onclick = () => audio.stopVoice();
+
+// ---------- listener pad ----------
+const pad = $('pad'), pc = pad.getContext('2d');
+function drawPad() {
+  const w = pad.width, h = pad.height, s = w / 400;
+  pc.fillStyle = '#101215'; pc.fillRect(0, 0, w, h);
+  const z = +$('zoom').value, sc = Math.min(3, Math.max(0.6, 1 / z));
+  pc.strokeStyle = '#2c313a'; pc.beginPath(); pc.arc(w / 2, h / 2, 20 * sc * s, 0, 7); pc.stroke(); pc.beginPath(); pc.arc(w / 2, h / 2, 180 * sc * s, 0, 7); pc.stroke();
+  pc.fillStyle = '#e6e2d8'; pc.fillRect(w / 2 - 3, h / 2 - 3, 6, 6);
+  pc.fillStyle = '#e0a63a'; pc.beginPath(); pc.arc(w / 2 + src.x * s, h / 2 + src.y * s, 5, 0, 7); pc.fill();
+  pc.fillStyle = '#9aa0a8'; pc.fillText(`src ${src.x.toFixed(0)}, ${src.y.toFixed(0)} m   (rings: full 20 m / silent 180 m × zoom)`, 6, 12);
+}
+pad.onclick = (e) => { const r = pad.getBoundingClientRect(), s = r.width / 400; src.x = (e.clientX - r.left - r.width / 2) / s; src.y = (e.clientY - r.top - r.height / 2) / s; drawPad(); applySrc(); };
+function fitPad() { pad.width = Math.max(200, Math.round(pad.clientWidth)); pad.height = Math.round(pad.clientHeight) || 160; }
+addEventListener('resize', () => { fitPad(); drawPad(); });
+fitPad();
+$('zoom').oninput = () => { $('zoomV').textContent = (+$('zoom').value).toFixed(2); drawPad(); };
+drawPad();
+
+// ---------- one-shots ----------
+for (const n of audio.soundNames) {
+  const b = document.createElement('button'); b.textContent = n;
+  b.onclick = async () => { await start(); audio.play(n, $('usePos').checked ? { x: src.x, y: src.y } : {}); };
+  $('sfx').appendChild(b);
+}
+
+// ---------- engines ----------
+for (const p of audio.engineProfiles) $('engSel').add(new Option(p, p));
+$('engSel').value = 'v8';
+let eng = null, ai = [];
+const st = () => ({ rpm: +$('rpm').value, throttle: +$('thr').value, speed: +$('spd').value });
+$('engStart').onclick = async () => { await start(); eng?.stop(); eng = audio.createEngine($('engSel').value); eng.setPlayer($('engPlayer').checked); if (!$('engPlayer').checked) eng.setPos(src.x, src.y); eng.setState(st()); };
+$('engStop').onclick = () => { eng?.stop(); eng = null; };
+$('engSel').onchange = () => { if (eng) $('engStart').onclick(); };
+$('engPlayer').onchange = () => { if (eng) { eng.setPlayer($('engPlayer').checked); if (!$('engPlayer').checked) eng.setPos(src.x, src.y); } };
+for (const id of ['rpm', 'thr', 'spd']) $(id).oninput = () => { if (eng) eng.setState(st()); };
+$('traffic').onclick = async () => {
+  await start();
+  const P = ['i4', 'v6', 'v8', 'diesel', 'moto_4t', 'electric', 'v8_muscle', 'diesel_big', 'moto_2t', 'atv'];
+  for (let i = 0; i < 10; i++) { const e = audio.createEngine(P[i]); const a = Math.random() * 6.28, r = 15 + Math.random() * 120; e.x0 = Math.cos(a) * r; e.y0 = Math.sin(a) * r; e.ph = Math.random() * 6; e.setPos(e.x0, e.y0); ai.push(e); }
+};
+$('trafficStop').onclick = () => { ai.forEach((e) => e.stop()); ai = []; };
+
+// ---------- sirens ----------
+for (const t of audio.sirenTypes) $('sirSel').add(new Option(t, t));
+let siren = null;
+function sirenModes() {
+  $('sirModes').innerHTML = '';
+  const modes = $('sirSel').value === 'fire' ? ['growl', 'wail', 'yelp', 'hilo'] : ['auto', 'wail', 'yelp', 'hilo'];
+  for (const m of modes) { const b = document.createElement('button'); b.textContent = m; b.onclick = () => siren?.setMode(m); $('sirModes').appendChild(b); }
+}
+sirenModes(); $('sirSel').onchange = () => { sirenModes(); if (siren) $('sirStart').onclick(); };
+$('sirStart').onclick = async () => { await start(); siren?.stop(); siren = audio.createSiren($('sirSel').value); siren.setPos(src.x, src.y); };
+$('sirStop').onclick = () => { siren?.stop(); siren = null; };
+$('sirVel').oninput = () => { $('sirVelV').textContent = $('sirVel').value; siren?.setVelocity(+$('sirVel').value, 0); };
+
+// ---------- loops ----------
+const loops = {};
+for (const n of audio.loopNames) {
+  const l = document.createElement('label');
+  l.innerHTML = `<button style="width:130px">${n}</button><input type="range" min="0" max="1" step="0.01" value="0.6"><span class="v">0.60</span>`;
+  const b = l.querySelector('button'), inp = l.querySelector('input'), sp = l.querySelector('span');
+  b.onclick = async () => {
+    await start();
+    if (loops[n]) { loops[n].stop(); delete loops[n]; b.classList.remove('on'); return; }
+    loops[n] = audio.createLoop(n).setIntensity(+inp.value); b.classList.add('on');
+    if (n === 'tyre_squeal' || n === 'fire' || n === 'flamethrower' || n === 'helicopter') loops[n].setPos(src.x, src.y);
+  };
+  inp.oninput = () => { sp.textContent = (+inp.value).toFixed(2); loops[n]?.setIntensity(+inp.value); };
+  $('loops').appendChild(l);
+}
+function applySrc() { if (siren && !$('sirPass').checked) siren.setPos(src.x, src.y); if (eng && !eng.player) eng.setPos(src.x, src.y); for (const n of ['tyre_squeal', 'fire', 'flamethrower', 'helicopter']) loops[n]?.setPos(src.x, src.y); }
+
+// ---------- radio ----------
+audio.radio.stations.forEach((s, i) => { const b = document.createElement('button'); b.textContent = s.name; b.title = s.desc; b.onclick = async () => { await start(); audio.radio.play(i); }; $('stations').appendChild(b); });
+$('rPrev').onclick = async () => { await start(); audio.radio.prev(); };
+$('rNext').onclick = async () => { await start(); audio.radio.next(); };
+$('rOff').onclick = () => audio.radio.off();
+$('inCar').onchange = () => audio.radio.setInCar($('inCar').checked);
+audio.radio.onChange(({ index, station, nowPlaying }) => {
+  [...$('stations').children].forEach((b, i) => b.classList.toggle('on', i === index));
+  $('np').textContent = station ? `${station.freq} — ${station.name}  ▸  ${nowPlaying ? (nowPlaying.jingle ? '[station ID]' : `“${nowPlaying.title}” — ${nowPlaying.artist}  (${nowPlaying.style || ''} ${nowPlaying.key || ''} ${nowPlaying.bpm} bpm)`) : ''}` : 'radio off';
+});
+
+// ---------- music ----------
+document.querySelectorAll('[data-m]').forEach((b) => b.onclick = async () => { await start(); const m = b.dataset.m; if (m === 'stop') audio.stopMusic(); else { audio.playMusic(m); $('mi').value = audio.musicIntensity; } });
+$('mi').oninput = () => { $('miV').textContent = (+$('mi').value).toFixed(2); audio.setMusicIntensity(+$('mi').value); };
+
+// ---------- animation loop ----------
+let gearT = 0;
+function loop() {
+  requestAnimationFrame(loop);
+  const t = performance.now() / 1000;
+  audio.setListener(0, 0, +$('zoom').value);
+  if (eng && $('engAuto').checked) {
+    gearT += 1 / 60; const g = Math.floor(gearT / 2.2) % 5, u = (gearT % 2.2) / 2.2;
+    const rpm = 0.25 + 0.7 * u, speed = (g * 9 + u * 10);
+    $('rpm').value = rpm; $('thr').value = u > 0.95 ? 0 : 0.9; $('spd').value = speed; eng.setState(st());
+  }
+  for (const e of ai) { const a = t * 0.3 + e.ph; e.setPos(e.x0 + Math.cos(a) * 25, e.y0 + Math.sin(a) * 25); e.setState({ rpm: 0.3 + 0.25 * Math.sin(a * 2), throttle: 0.5 + 0.4 * Math.sin(a * 3), speed: 12 }); }
+  if (siren && $('sirPass').checked) { const x = ((t * 25) % 300) - 150; siren.setPos(x, 8); siren.setVelocity(25, 0); }
+  $('rpmV').textContent = (+$('rpm').value).toFixed(2); $('thrV').textContent = (+$('thr').value).toFixed(2); $('spdV').textContent = (+$('spd').value).toFixed(0);
+  $('engInfo').textContent = `live engines ${audio.liveEngines}/${audio._engines.size} (cap ${audio.maxEngines})`;
+}
+
+// ======================================================= SELF TEST ======
+const REQUIRED = 'ui_click ui_back ui_select pickup pickup_weapon pickup_health pickup_armor cash phone_ring phone_pickup mission_start mission_pass mission_fail wasted busted wanted_up wanted_lost checkpoint door_open door_close car_start punch punch_hit footstep footstep_grass body_fall scream_m scream_f ouch splash glass crash_light crash_med crash_heavy scrape explosion explosion_big bullet_hit_metal bullet_hit_flesh bullet_hit_wall ricochet shell_drop reload empty_click melee_swing bat_hit knife_stab pistol revolver smg shotgun rifle sniper minigun_shot rocket_launch grenade_throw molotov_throw taser horn_high horn_mid horn_low horn_truck horn_bike_bell horn_moto horn_squeaky bicycle_bell brakes_hiss gear_shift train_horn train_bell helicopter_flyby crowd_cheer dog_bark cow_moo thunder tornado_siren money_lost menu_open'.split(' ');
+const REQ_LOOPS = 'tyre_squeal rain wind fire flamethrower water_lap crowd helicopter city_ambience night_crickets cicadas'.split(' ');
+const REQ_ENGINES = 'i4 v6 v8 v8_muscle v12_super diesel diesel_big electric moto_2t moto_4t moto_v2 atv bicycle tractor mower outboard turbine'.split(' ');
+// In headless --virtual-time-budget runs, virtual time jumps ahead whenever the main
+// thread is idle (e.g. while awaiting OfflineAudioContext renders), so --dump-dom would
+// fire before the test finishes. While the self-test runs we keep a MessageChannel
+// ping-pong going (an always-pending task freezes virtual time) and measure sleeps
+// with the real AudioContext clock instead of setTimeout.
+let holding = false;
+function hold(on) {
+  holding = on; if (!on) return;
+  // Each ping spins ~0.3 ms so the task rate (and with it Chrome's starvation-forced
+  // virtual-time advances) stays low; a 1 ms timer chain keeps each forced advance tiny.
+  const ch = new MessageChannel();
+  ch.port1.onmessage = () => { if (!holding) return; const e = performance.now() + 0.3; let k = 0; while (performance.now() < e && k++ < 2e5); ch.port2.postMessage(0); };
+  ch.port2.postMessage(0);
+  const tk = () => { if (holding) setTimeout(tk, 1); }; tk();
+}
+const yieldTask = () => new Promise((r) => { const c = new MessageChannel(); c.port1.onmessage = () => r(); c.port2.postMessage(0); });
+async function sleep(ms) {
+  if (!holding) return new Promise((r) => setTimeout(r, ms));
+  const ctx = audio.ctx, end = ctx ? ctx.currentTime + ms / 1000 : 0;
+  for (let i = 0; i < ms * 400; i++) { if (ctx && ctx.currentTime >= end) return; await yieldTask(); }
+}
+function stats(buf, skip = 0) {
+  let s = 0, n = 0, peak = 0, nan = false;
+  for (let c = 0; c < buf.numberOfChannels; c++) { const d = buf.getChannelData(c); for (let i = Math.floor(skip * buf.sampleRate); i < d.length; i++) { const v = d[i]; if (!Number.isFinite(v)) { nan = true; continue; } s += v * v; n++; const a = v < 0 ? -v : v; if (a > peak) peak = a; } }
+  return { rms: Math.sqrt(s / Math.max(1, n)), peak, nan };
+}
+// Autocorrelation period estimate (shortest strong period) on a 4x-decimated window.
+function estimateF0(buf, skip = 0.5, fmin = 4, fmax = 900) {
+  const d = buf.getChannelData(0), sr = buf.sampleRate, ds = 4, st = Math.floor(skip * sr), N = 8192, x = new Float32Array(N);
+  for (let i = 0; i < N; i++) { let a = 0; for (let k = 0; k < ds; k++) a += d[st + i * ds + k] || 0; x[i] = a / ds; }
+  let m = 0; for (const v of x) m += v; m /= N; for (let i = 0; i < N; i++) x[i] -= m;
+  const srd = sr / ds, lo = Math.max(2, Math.floor(srd / fmax)), hi = Math.min(N >> 1, Math.ceil(srd / fmin)), ac = new Float32Array(hi + 2);
+  let r0 = 0; for (let i = 0; i < N; i++) r0 += x[i] * x[i];
+  let best = 0;
+  for (let L = lo; L <= hi + 1; L++) { let s = 0; for (let i = 0; i < N - L; i++) s += x[i] * x[i + L]; ac[L] = s / r0 * N / (N - L); if (L <= hi && ac[L] > best) best = ac[L]; }
+  for (let L = lo + 1; L <= hi; L++) if (ac[L] >= 0.8 * best && ac[L] >= ac[L - 1] && ac[L] >= ac[L + 1]) return { f: srd / L, conf: ac[L] };
+  return { f: 0, conf: 0 };
+}
+function centroid(buf, skip = 0.2) {
+  const d = buf.getChannelData(0), sr = buf.sampleRate, N = 4096, st = Math.floor(skip * sr); let num = 0, den = 0;
+  for (let k = 1; k < N / 2; k += 4) { let re = 0, im = 0; for (let i = 0; i < N; i++) { const w = (2 * Math.PI * k * i) / N, v = d[st + i] || 0; re += v * Math.cos(w); im -= v * Math.sin(w); } const mag = Math.hypot(re, im); num += mag * k * sr / N; den += mag; }
+  return den ? num / den : 0;
+}
+function b64(ab) { let s = ''; const u = new Uint8Array(ab); for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s); }
+
+async function selftest() {
+  $('reportBox').hidden = false;
+  const R = [], errors = [], t0 = performance.now();
+  const ok = (name, pass, info = '') => { R.push({ name, pass: !!pass, info }); $('report').textContent = R.map((r) => `[${r.pass ? 'PASS' : 'FAIL'}] ${r.name}${r.info ? ' — ' + r.info : ''}`).join('\n'); };
+  addEventListener('error', (e) => errors.push(String(e.message)));
+  addEventListener('unhandledrejection', (e) => errors.push('unhandled rejection: ' + (e.reason && e.reason.message || e.reason)));
+  hold(true);
+  const ow = console.warn, warns = []; console.warn = (...a) => { warns.push(a.map(String).join(' ')); ow.apply(console, a); };
+  try {
+    await start();
+    ok('init', audio.ctx && audio.baked, `state=${audio.ctx.state} sr=${audio.ctx.sampleRate} bake=${audio.stats.bakeMs}ms`);
+    const missing = REQUIRED.filter((n) => !audio.soundNames.includes(n));
+    ok('all required one-shot names present', !missing.length, missing.length ? 'missing: ' + missing.join(',') : `${REQUIRED.length} required, ${audio.soundNames.length} total`);
+    ok('all loop names present', REQ_LOOPS.every((n) => audio.loopNames.includes(n)));
+    ok('all engine profiles present', REQ_ENGINES.every((n) => audio.engineProfiles.includes(n)));
+    // baked buffers
+    let bad = [];
+    for (const n of Object.keys(audio.buffers)) for (const b of audio.buffers[n]) { const s = stats(b); if (s.nan || s.rms < 1e-4 || s.peak > 1.001) bad.push(`${n}(rms=${s.rms.toFixed(4)} peak=${s.peak.toFixed(2)}${s.nan ? ' NaN' : ''})`); }
+    const nb = Object.values(audio.buffers).reduce((s, a) => s + a.length, 0), secs = Object.values(audio.buffers).flat().reduce((s, b) => s + b.duration, 0);
+    ok('baked one-shot buffers: RMS>0, no NaN, peak<=1', !bad.length, bad.length ? bad.join(' ') : `${nb} buffers, ${secs.toFixed(1)} s total audio`);
+    for (const n of REQUIRED) { const b = audio.buffers[n]?.[0]; if (b) { const s = stats(b); ok('sfx ' + n, s.rms > 1e-4 && !s.nan, `vars=${audio.buffers[n].length} ${b.duration.toFixed(2)}s rms=${s.rms.toFixed(3)} peak=${s.peak.toFixed(2)}`); } else ok('sfx ' + n, false, 'no buffer'); }
+    // live triggering
+    let thrown = [];
+    audio.setListener(0, 0, 1);
+    for (const n of audio.soundNames) { try { const h = audio.play(n, { vol: 0.03, x: 8, y: 3 }); if (!h.playing) thrown.push(n + '(not playing)'); h.stop(); } catch (e) { thrown.push(n + ': ' + e.message); } }
+    ok('play() every one-shot (positional)', !thrown.length, thrown.join(', '));
+    const far = audio.play('pistol', { x: 1000, y: 0 }); ok('distance culling (1 km away is silent)', !far.playing);
+    const g1 = audio._spatial(100, 0).g; audio.setListener(0, 0, 0.5); const g2 = audio._spatial(100, 0).g; audio.setListener(0, 0, 1);
+    ok('zoomed-out listener hears further', g2 > g1, `gain@100m zoom1=${g1.toFixed(3)} zoom0.5=${g2.toFixed(3)}`);
+    const sl = audio._spatial(-50, 0), sr2 = audio._spatial(50, 0); ok('stereo pan follows x', sl.pan < 0 && sr2.pan > 0, `pan(-50)=${sl.pan.toFixed(2)} pan(50)=${sr2.pan.toFixed(2)}`);
+    // engines live + offline pitch tracking
+    for (const p of audio.engineProfiles) { try { const e = audio.createEngine(p); e.setPlayer(true); for (const rpm of [0, 0.5, 1]) e.setState({ rpm, throttle: rpm, speed: rpm * 30 }); e.setPlayer(false); e.setPos(20, 0); e.stop(); ok('engine live ' + p, true); } catch (err) { ok('engine live ' + p, false, err.message); } }
+    const many = Array.from({ length: 12 }, (_, i) => { const e = audio.createEngine(audio.engineProfiles[i % 10]); e.setPos(10 + i * 12, 0); e.setState({ rpm: 0.4, throttle: 0.5 }); return e; });
+    audio._updateEngines();
+    ok('engine voice cap (quietest culled)', audio.liveEngines <= audio.maxEngines && audio.liveEngines > 0, `live=${audio.liveEngines} of ${many.length}, cap=${audio.maxEngines}; nearest live=${many[0].live}, farthest live=${many[11].live}`);
+    many.forEach((e) => e.stop());
+    for (const p of audio.engineProfiles) {
+      const rows = [];
+      for (const rpm of [0.1, 0.5, 0.9]) { const b = await audio.renderEngine(p, { rpm, throttle: 0.7, speed: rpm * 30 }, 1.6); const s = stats(b, 0.4), f = estimateF0(b, 0.5); rows.push({ rpm, rms: s.rms, nan: s.nan, peak: s.peak, f: f.f, fire: audio._lastRender.fireHz }); }
+      const ice = rows[0].fire != null, mono = rows[1].f > rows[0].f && rows[2].f > rows[1].f;
+      const pass = rows.every((r) => r.rms > 1e-3 && !r.nan) && (!ice || (rows[1].fire > rows[0].fire && rows[2].fire > rows[1].fire && mono));
+      ok('engine render ' + p, pass, rows.map((r) => `rpm ${r.rpm}: rms=${r.rms.toFixed(3)} pk=${r.peak.toFixed(2)}${ice ? ` fire=${r.fire.toFixed(0)}Hz` : ''} f0~${r.f.toFixed(1)}Hz`).join(' | '));
+    }
+    // sirens
+    for (const t of audio.sirenTypes) {
+      try { const s = audio.createSiren(t); s.setPos(30, 10); for (const m of ['wail', 'yelp', 'hilo', t === 'fire' ? 'growl' : 'auto']) s.setMode(m); s.setVelocity(30, 0); s.stop(); ok('siren live ' + t, true); } catch (e) { ok('siren live ' + t, false, e.message); }
+      const modes = t === 'fire' ? ['growl', 'wail', 'yelp', 'hilo'] : ['wail', 'yelp', 'hilo'], info = [];
+      let pass = true;
+      for (const m of modes) { const b = await audio.renderSiren(t, m, 2.5); const s = stats(b, 0.2); pass = pass && s.rms > 1e-3 && !s.nan; info.push(`${m}: rms=${s.rms.toFixed(3)} centroid=${centroid(b, 0.5).toFixed(0)}Hz`); }
+      ok('siren render ' + t, pass, info.join(' | '));
+    }
+    // loops
+    for (const n of audio.loopNames) {
+      try { const l = audio.createLoop(n); l.setIntensity(0.7); l.setPos(10, 10); l.setIntensity(0.2); l.stop(); } catch (e) { ok('loop live ' + n, false, e.message); continue; }
+      const t1 = performance.now(), b = await audio.renderLoop(n, 0.8, 1.5), s = stats(b, 0.2);
+      ok('loop ' + n, s.rms > 1e-3 && !s.nan, `rms=${s.rms.toFixed(3)} peak=${s.peak.toFixed(2)} (${Math.round(performance.now() - t1)} ms incl. bake)`);
+    }
+    // radio live
+    let changes = 0; const un = audio.radio.onChange(() => changes++);
+    for (let i = 0; i < audio.radio.stations.length; i++) {
+      audio.radio.play(i); await sleep(400);
+      const p = audio.radio.player;
+      ok('radio live ' + audio.radio.stations[i].name, p && (p.notes > 0 || p.queue.length > 0 || p.bar > 0) && audio.radio.current === i, `notes=${p?.notes} queued=${p?.queue.length} np=${JSON.stringify(audio.radio.nowPlaying)}`);
+    }
+    audio.radio.next(); audio.radio.prev(); audio.radio.setInCar(false); audio.radio.setInCar(true); audio.radio.off(); un();
+    ok('radio next/prev/off/onChange', audio.radio.current === -1 && changes >= 10, `changes=${changes}`);
+    // radio offline renders
+    for (let i = 0; i < audio.radio.stations.length; i++) {
+      const st = audio.radio.stations[i], t1 = performance.now(), b = await audio.renderStation(i, 6, { seed: 1000 + i }), s = stats(b, 0.3), ms = performance.now() - t1, lr = audio._lastRender;
+      ok('station render ' + st.name, s.rms > 2e-3 && !s.nan && lr.notes > 0, `rms=${s.rms.toFixed(3)} peak=${s.peak.toFixed(2)} notes=${lr.notes} ${ms.toFixed(0)}ms song=${JSON.stringify(lr.song)}`);
+      // second song (different seed) to exercise variety
+      const b2 = await audio.renderStation(i, 4, { seed: 7 + i * 13, songN: 3, bar: 8 }), s2 = stats(b2, 0.3);
+      ok('station render (other song, mid-song) ' + st.id, s2.rms > 1e-3 && !s2.nan, `rms=${s2.rms.toFixed(3)} song=${JSON.stringify(audio._lastRender.song)}`);
+      // song boundary: start on the last bar, force a station-ID jingle, run into the next song
+      const b3 = await audio.renderStation(i, 12, { seed: 99 + i, bar: 9999, jingleP: 1 }), s3 = stats(b3, 0.1), lr3 = audio._lastRender;
+      ok('song change + station ID ' + st.id, !s3.nan && s3.rms > 1e-3 && lr3.songs >= 2, `songs started=${lr3.songs} notes=${lr3.notes} rms=${s3.rms.toFixed(3)}`);
+    }
+    // score / title
+    const bt = await audio.renderStation('title', 8), stt = stats(bt, 0.3); ok('title theme render', stt.rms > 2e-3 && !stt.nan, `rms=${stt.rms.toFixed(3)} notes=${audio._lastRender.notes}`);
+    const lo = stats(await audio.renderStation('score', 5, { intensity: 0.1 }), 0.3), nLo = audio._lastRender.notes, mid = stats(await audio.renderStation('score', 5, { intensity: 0.5 }), 0.3), hi = stats(await audio.renderStation('score', 5, { intensity: 1 }), 0.3), nHi = audio._lastRender.notes;
+    ok('adaptive score: layers add notes + level with intensity', hi.rms > lo.rms * 1.2 && nHi > nLo * 2 && lo.rms > 1e-3, `rms@0.1=${lo.rms.toFixed(3)} @0.5=${mid.rms.toFixed(3)} @1=${hi.rms.toFixed(3)}  notes ${nLo} -> ${nHi}`);
+    audio.playMusic('title'); await sleep(200); const m1 = audio.music && audio.music.genre === 'title';
+    audio.playMusic('mission'); const m2 = audio.music.genre === 'score'; audio.setMusicIntensity(1); audio.playMusic('chase'); await sleep(200);
+    ok('playMusic title/mission/chase + intensity', m1 && m2 && audio.musicIntensity === 1, `notes=${audio.music.notes}`);
+    audio.stopMusic(0.1); ok('stopMusic', !audio.music);
+    // voice + ducking
+    const url = voiceTestUrl(); let ended = null;
+    const vp = audio.playVoice(url, { onEnd: (n) => (ended = n) }); await sleep(250);
+    const ducking = audio.voicePlaying && audio.sfxDuck.gain.value < 0.9;
+    audio.stopVoice(); const vr = await Promise.race([vp, sleep(2000).then(() => 'timeout')]);
+    ok('playVoice decodes + ducks; stopVoice ends it', ducking && vr === false && ended === false, `playing=${ducking} result=${vr} duck=${audio.sfxDuck.gain.value.toFixed(2)}`);
+    const badV = await audio.playVoice('/assets/voice/__missing__.wav'); ok('playVoice missing file resolves false', badV === false);
+    // volumes
+    const v = audio.setVolumes({ master: 0.8, sfx: 0.5, music: 0.4, voice: 1, radio: 0.6 }); audio.setMuted(true); const mu = audio.muted; audio.setMuted(false);
+    ok('setVolumes / setMuted', v.sfx === 0.5 && mu && !audio.muted, JSON.stringify(audio.volumes));
+    { const t1 = performance.now(), b = await audio.renderStress(4), s = stats(b), ms = performance.now() - t1;
+      ok('stress mix (8 engines, 3 sirens, 4 loops, radio+score, 40 one-shots)', !s.nan && s.rms > 1e-3, `render ${ms.toFixed(0)} ms for 4 s => ${ms ? (4000 / ms).toFixed(0) + 'x realtime' : 'n/a (virtual time)'}; rms=${s.rms.toFixed(3)} peak=${s.peak.toFixed(2)}`); }
+    await sleep(300);
+    const pb = audio.stats.prebakeMs || {}, worst = Object.entries(pb).sort((a, b) => b[1] - a[1]).slice(0, 4);
+    ok('background prebake (worst items, ms)', true, worst.length ? worst.map(([k, v]) => `${k}=${v}`).join(' ') + ` (${Object.keys(pb).length} items)` : 'not finished yet (lazy bake on first use)');
+    ok('no uncaught errors', !errors.length, errors.join(' | '));
+    const unexpected = warns.filter((w) => !/voice load failed|unknown sound/.test(w));
+    ok('no unexpected warnings', !unexpected.length, unexpected.slice(0, 5).join(' | '));
+    if (params.get('wav')) {
+      const W = {}, put = (n, b) => (W[n] = b64(AudioSys.encodeWAV(b)));
+      for (const n of ['pistol', 'shotgun', 'explosion', 'crash_heavy', 'wasted', 'mission_pass', 'tornado_siren', 'cow_moo']) put('sfx_' + n, audio.buffers[n][0]);
+      put('siren_police_wail', await audio.renderSiren('police', 'wail', 4)); put('siren_police_yelp', await audio.renderSiren('police', 'yelp', 3)); put('siren_fire_growl', await audio.renderSiren('fire', 'growl', 6));
+      for (const p of ['v8', 'v8_muscle', 'moto_v2', 'diesel_big', 'tractor', 'electric']) for (const rpm of [0.1, 0.5, 0.9]) put(`engine_${p}_rpm${rpm}`, await audio.renderEngine(p, { rpm, throttle: 0.7, speed: rpm * 30 }, 3));
+      for (const l of ['rain', 'cicadas', 'helicopter', 'city_ambience']) put('loop_' + l, await audio.renderLoop(l, 0.8, 4));
+      for (let i = 0; i < audio.radio.stations.length; i++) put('radio_' + audio.radio.stations[i].id, await audio.renderStation(i, 8, { seed: 2024 + i }));
+      put('music_title', await audio.renderStation('title', 12)); put('music_chase', await audio.renderStation('score', 8, { intensity: 1 }));
+      window.__wavs = W;
+      ok('wav export', true, Object.keys(W).length + ' files');
+    }
+  } catch (e) { ok('selftest crashed', false, e.stack || e.message); }
+  const pass = R.every((r) => r.pass), nPass = R.filter((r) => r.pass).length;
+  const elapsed = Math.max((performance.now() - t0) / 1000, audio.ctx ? audio.ctx.currentTime : 0); // ctx clock is real even under virtual time
+  const head = `GTPOLLY AUDIO SELFTEST: ${pass ? 'PASS' : 'FAIL'} (${nPass}/${R.length}) in ${elapsed.toFixed(1)} s`;
+  $('report').textContent = head + '\n' + $('report').textContent;
+  $('selftest-result').textContent = head; $('selftest-result').className = pass ? 'pass' : 'fail'; $('selftest-result').dataset.pass = pass ? '1' : '0';
+  document.title = head;
+  window.__selftest = { done: true, pass, results: R, head };
+  audio.radio.off(); audio.stopMusic(0.1);
+  hold(false);
+}
+if (params.get('selftest')) selftest();
+</script>
+</body>
+</html>

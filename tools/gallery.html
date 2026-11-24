@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GTPolly Gallery</title>
+<style>
+  :root { --bg: #15130f; --ink: #f4ead2; --dim: #a89e86; --accent: #f2b233; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Trebuchet MS", system-ui, sans-serif; }
+  h1 { font-family: Impact, "Arial Black", sans-serif; letter-spacing: .04em; margin: 16px 20px 0; }
+  h1 span { color: var(--accent); }
+  h2 { font-family: Impact, sans-serif; letter-spacing: .06em; color: var(--accent); margin: 18px 20px 6px; font-weight: normal; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; padding: 0 20px 12px; }
+  .card { background: #ffffff0a; border: 1px solid #ffffff14; padding: 6px; text-align: center; font-size: 11px; }
+  .card canvas { width: 100%; image-rendering: pixelated; display: block; }
+  .card b { display: block; font-size: 12px; color: var(--ink); }
+  .card i { color: var(--dim); font-style: normal; }
+  #peds { padding: 0 20px 20px; }
+  #peds canvas { width: 100%; image-rendering: pixelated; }
+</style>
+</head>
+<body>
+<h1>GT<span>POLLY</span> — Gallery</h1>
+<h2>Vehicles</h2><div class="grid" id="veh"></div>
+<h2>People (sample of the pedestrian models)</h2><div id="peds"></div>
+<h2>Props &amp; landmarks</h2><div class="grid" id="props"></div>
+<script type="module">
+import { StackSprite, loadImage } from '../src/engine/stacks.js';
+const params = new URLSearchParams(location.search);
+const only = params.get('only'); // veh | peds | props
+const draw = (spr, k, turn) => {
+  const c = document.createElement('canvas'); c.width = 150; c.height = 110;
+  const x = c.getContext('2d'); x.imageSmoothingEnabled = false;
+  spr.drawPreview(x, 75, 70, turn, k, 0.72, 1);
+  return c;
+};
+if (!only || only === 'veh') {
+  const cat = await (await fetch('../assets/vehicles/catalog.json')).json();
+  const box = document.getElementById('veh');
+  for (const v of cat.vehicles) {
+    const img = await loadImage('../assets/vehicles/' + v.file);
+    const spr = new StackSprite(img, v.w, v.h, v.count, cat.artScale, cat.sliceH);
+    const k = Math.min(2.4, 82 / Math.max(v.h, v.w * 1.6, 10));
+    const card = document.createElement('div'); card.className = 'card';
+    card.appendChild(draw(spr, k, 0.55));
+    card.insertAdjacentHTML('beforeend', `<b>${v.make} ${v.name}</b><i>${v.class} · ${v.kind} · ${Math.round(v.topSpeed * 2.237)} mph</i>`);
+    box.appendChild(card);
+  }
+}
+if (!only || only === 'peds') {
+  const P = await import('../src/data/peds.js');
+  const n = P.pedModelCount();
+  const cols = 24, rows = Math.ceil(Math.min(n, 240) / cols);
+  const c = document.createElement('canvas'); c.width = cols * 40; c.height = rows * 56;
+  const x = c.getContext('2d'); x.imageSmoothingEnabled = false;
+  for (let i = 0; i < Math.min(n, 240); i++) {
+    const s = P.buildPedSprites(i);
+    const spr = new StackSprite(s.frames.walk[(i * 2) % s.frames.walk.length], s.w, s.h, s.count, 0.1, 0.1);
+    spr.drawPreview(x, (i % cols) * 40 + 20, Math.floor(i / cols) * 56 + 44, 0.3 + (i % 7) * 0.2, 1.4, 0.75, 1);
+  }
+  document.getElementById('peds').appendChild(c);
+  document.getElementById('peds').insertAdjacentHTML('beforeend', `<p style="color:#a89e86">${n} unique pedestrian models · ${P.ARCHETYPES.length} archetypes · ${P.SKIN_TONES.length} skin tones</p>`);
+}
+if (!only || only === 'props') {
+  const cat = await (await fetch('../assets/props/catalog.json')).json();
+  const box = document.getElementById('props');
+  for (const p of cat.props) {
+    const img = await loadImage('../assets/props/' + p.file);
+    const spr = new StackSprite(img, p.w, p.h, p.count, p.px, p.sliceH);
+    const k = Math.min(3, 60 / Math.max(p.w, p.h, p.count * p.sliceH / p.px * 0.7, 8));
+    const card = document.createElement('div'); card.className = 'card';
+    card.appendChild(draw(spr, k, 0.6));
+    card.insertAdjacentHTML('beforeend', `<b>${p.name || p.id}</b><i>${p.kind}</i>`);
+    box.appendChild(card);
+  }
+}
+document.title = 'GTPolly Gallery (ready)';
+</script>
+</body>
+</html>

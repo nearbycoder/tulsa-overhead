@@ -1,0 +1,1742 @@
+{
+ "props": [
+  {
+   "id": "oak_1",
+   "name": "Oak",
+   "file": "oak_1.png",
+   "w": 62,
+   "h": 62,
+   "count": 30,
+   "px": 0.2,
+   "sliceH": 0.35,
+   "solid": true,
+   "radius": 0.6,
+   "kind": "tree",
+   "breakable": false,
+   "group": "oak",
+   "footprint": [
+    11.8,
+    12.0
+   ],
+   "height": 10.5,
+   "desc": "Broad round-canopied shade oak, 11 m."
+  },
+  {
+   "id": "golden_driller",
+   "name": "Golden Driller",
+   "file": "golden_driller.png",
+   "w": 60,
+   "h": 28,
+   "count": 91,
+   "px": 0.25,
+   "sliceH": 0.25,
+   "solid": true,
+   "radius": 4.0,
+   "kind": "landmark",
+   "breakable": false,
+   "footprint": [
+    14.5,
+    6.5
+   ],
+   "height": 22.75,
+   "desc": "76-ft gold statue of an oil worker in a hard hat, right hand resting on a derrick, Expo Square."
+  },
+  {
+   "id": "street_lamp",
+   "name": "Street Lamp",
+   "file": "street_lamp.png",
+   "w": 8,
+   "h": 54,
+   "count": 31,
+   "px": 0.125,
+   "sliceH": 0.3,
+   "solid": true,
+   "radius": 0.25,
+   "kind": "street",
+   "breakable": true,
+   "footprint": [
+    0.75,
+    3.5
+   ],
+   "height": 9.3,
+   "pivot": "pole",
+   "desc": "Galvanised cobra-head street light; arm reaches 2.5 m toward +y (the road)."
+  },
+  {
+   "id": "dumpster",
+   "name": "Dumpster",
+   "file": "dumpster.png",
+   "w": 22,
+   "h": 18,
+   "count": 15,
+   "px": 0.1,
+   "sliceH": 0.1,
+   "solid": true,
+   "radius": 0.9,
+   "kind": "street",
+   "breakable": false,
+   "footprint": [
+    2.0,
+    1.6
+   ],
+   "height": 1.5,
+   "desc": "Green front-load dumpster with black lids."
+  },
+  {
+   "id": "blue_whale_catoosa",
+   "name": "Blue Whale of Catoosa",
+   "file": "blue_whale_catoosa.png",
+   "w": 56,
+   "h": 100,
+   "count": 23,
+   "px": 0.35,
+   "sliceH": 0.3,
+   "solid": true,
+   "radius": 9.0,
+   "kind": "landmark",
+   "breakable": false,
+   "footprint": [
+    18.9,
+    33.95
+   ],
+   "height": 6.9,
+   "desc": "Route 66 roadside icon: 24 m smiling blue whale with an open walk-in mouth, white hat and raised tail, sitting in its pond with a plank walkway to the mouth."
+  },
+  {
+   "id": "praying_hands",
+   "name": "Praying Hands",
+   "file": "praying_hands.png",
+   "w": 36,
+   "h": 36,
+   "count": 71,
+   "px": 0.25,
+   "sliceH": 0.25,
+   "solid": true,
+   "radius": 3.6,
+   "kind": "landmark",
+   "breakable": false,
+   "footprint": [
+    8.5,
+    8.5
+   ],
+   "height": 17.75,
+   "desc": "18 m bronze praying hands sculpture (palms pressed, fingertips up, shirt cuffs) on a granite pedestal at the ORU entrance. Thumbs face +y."
+  },
+  {
+   "id": "oru_prayer_tower",
+   "name": "Prayer Tower",
+   "file": "oru_prayer_tower.png",
+   "w": 56,
+   "h": 56,
+   "count": 101,
+   "px": 0.5,
+   "sliceH": 0.6,
+   "solid": true,
+   "radius": 9.0,
+   "kind": "landmark",
+   "breakable": false,
+   "emissive": "oru_prayer_tower_emit.png",
+   "footprint": [
+    27.0,
+    27.0
+   ],
+   "height": 60.6,
+   "desc": "60 m mid-century tower at ORU: finned white shaft, gold glass observation deck ringed with a crown of spikes, spire and eternal flame (emissive)."
+  },
+  {
+   "id": "center_of_universe",
+   "name": "Center of the Universe",
+   "file": "center_of_universe.png",
+   "w": 48,
+   "h": 48,
+   "count": 2,
+   "px": 0.1,
+   "sliceH": 0.1,
+   "solid": false,
+   "radius": 0,
+   "kind": "landmark",
+   "breakable": false,
+   "footprint": [
+    4.6,
+    4.6
+   ],
+   "height": 0.2,
+   "desc": "Small concentric brick circle downtown with an acoustic centre disc; walk-through ground piece."
+  },
+  {
+   "id": "buck_atom_space_cowboy",
+   "name": "Space Cowboy Statue",
+   "file": "buck_atom_space_cowboy.png",
+   "w": 30,
+   "h": 30,
+   "count": 63,
+   "px": 0.1,
+   "sliceH": 0.1,
+   "solid": true,
+   "radius": 1.3,
+   "kind": "landmark",
+   "breakable": false,
+   "footprint": [
+    2.8,
+    2.7
+   ],
+   "height": 6.3,
+   "desc": "6 m fiberglass Route 66 'space cowboy' giant: bubble helmet, red shirt, jeans, boots, holding a toy rocket (original take on Buck Atom)."
+  },
+  {
+   "id": "meadow_gold_sign",
+   "name": "Dairy Neon Sign",
+   "file": "meadow_gold_sign.png",
+   "w": 68,
+   "h": 44,
+   "count": 62,
+   "px": 0.1,
+   "sliceH": 0.1,
+   "solid": true,
+   "radius": 3.0,
+   "kind": "landmark",
+   "breakable": false,
+   "emissive": "meadow_gold_sign_emit.png",
+   "footprint": [
+    6.6,
+    4.2
+   ],
+   "height": 6.2,
+   "desc": "Fictional rooftop-style 'MILK' neon sign on a small open pavilion (stand-in for the Route 66 dairy sign at 11th & Lewis). Neon letters and border glow at night."
+  },
+  {
+   "id": "giant_gas_pump",
+   "name": "Giant Gas Pump",
+   "file": "giant_gas_pump.png",
+   "w": 28,
+   "h": 24,
+   "count": 78,
+   "px": 0.25,
+   "sliceH": 0.25,
+   "solid": true,
+   "radius": 2.6,
+   "kind": "landmark",
+   "breakable": false,
+   "emissive": "giant_gas_pump_emit.png",
+   "footprint": [
+    6.5,
+    5.5
+   ],
+   "height": 19.5,
+   "desc": "Route 66 roadside giant: ~20 m vintage gas pump with a lit globe, dial face and hose (Sapulpa)."
+  },
+  {
+   "id": "route66_rising",
+   "name": "Route 66 Rising",
+   "file": "route66_rising.png",
+   "w": 96,
+   "h": 18,
+   "count": 43,
+   "px": 0.25,
+   "sliceH": 0.25,
+   "solid": true,
+   "radius": 4.0,
+   "kind": "landmark",
+   "breakable": false,
+   "footprint": [
+    23.5,
+    4.0
+   ],
+   "height": 10.75,
+   "collision": "arch",
+   "desc": "Arched road-ribbon sculpture with towering '66' numerals over the old Route 66 (East 11th St)."
+  },
+  {
+   "id": "oil_derrick",
+   "name": "Oil Derrick",
+   "file": "oil_derrick.png",
+   "w": 38,
+   "h": 38,
+   "count": 40,
+   "px": 0.25,
+   "sliceH": 0.75,
+   "solid": true,
+   "radius": 3.6,
+   "kind": "rural",
+   "breakable": false,
+   "footprint": [
+    9.0,
+    9.0
+   ],
+   "height": 30.0,
+   "desc": "30 m steel lattice drilling derrick on a drill floor with crown block and doghouse."
+  },
+  {
+   "id": "pumpjack",
+   "name": "Pumpjack",
+   "file": "pumpjack_f0.png",
+   "w": 26,
+   "h": 80,
+   "count": 38,
+   "px": 0.125,
+   "sliceH": 0.14,
+   "solid": true,
+   "radius": 2.2,
+   "kind": "rural",
+   "breakable": false,
+   "frames": [
+    "pumpjack_f0.png",
+    "pumpjack_f1.png",
+    "pumpjack_f2.png",
+    "pumpjack_f3.png"
+   ],
+   "footprint": [
+    3.0,
+    9.75
+   ],
+   "height": 5.32,
+   "fps": 3,
+   "loop": true,
+   "desc": "Nodding-donkey oil pumpjack (~8 m). 4-frame loop: f0..f3 = crank at 0/90/180/270 degrees."
+  },
+  {
+   "id": "windmill",
+   "name": "Farm Windmill",
+   "file": "windmill_f0.png",
+   "w": 26,
+   "h": 32,
+   "count": 39,
+   "px": 0.15,
+   "sliceH": 0.32,
+   "solid": true,
+   "radius": 1.2,
+   "kind": "rural",
+   "breakable": false,
+   "frames": [
+    "windmill_f0.png",
+    "windmill_f1.png"
+   ],
+   "footprint": [
+    3.6,
+    4.35
+   ],
+   "height": 12.48,
+   "fps": 4,
+   "loop": true,
+   "desc": "Old steel farm water-pumping windmill on a lattice tower; 2-frame fan spin (f0, f1)."
+  },
+  {
+   "id": "water_tower",
+   "name": "Water Tower",
+   "file": "water_tower.png",
+   "w": 80,
+   "h": 80,
+   "count": 60,
+   "px": 0.18,
+   "sliceH": 0.55,
+   "solid": true,
+   "radius": 4.6,
+   "kind": "landmark",
+   "breakable": false,
+   "footprint": [
+    14.04,
+    14.04
+   ],
+   "height": 33.0,
+   "desc": "Generic town water tower: bulb tank on four braced legs with a catwalk (label-free)."
+  },
+  {
+   "id": "grain_elevator",
+   "name": "Grain Elevator",
+   "file": "grain_elevator.png",
+   "w": 56,
+   "h": 36,
+   "count": 39,
+   "px": 0.4,
+   "sliceH": 1.0,
+   "solid": true,
+   "radius": 9.0,
+   "kind": "rural",
+   "breakable": false,
+   "footprint": [
+    21.6,
+    13.6
+   ],
+   "height": 39.0,
+   "desc": "Concrete grain elevator: 2x3 cluster of tall silos with a headhouse and roof gallery."
+  },
+  {
+   "id": "oil_storage_tank",
+   "name": "Oil Storage Tank",
+   "file": "oil_storage_tank.png",
+   "w": 52,
+   "h": 52,
+   "count": 31,
+   "px": 0.4,
+   "sliceH": 0.4,
+   "solid": true,
+   "radius": 9.6,
+   "kind": "rural",
+   "breakable": false,
+   "footprint": [
+    20.0,
+    20.0
+   ],
+   "height": 12.4,
+   "desc": "White 20 m crude storage tank with a low cone roof, stair landing and vent (Port of Catoosa / tank farms)."
+  },
+  {
+   "id": "radio_tower",
+   "name": "Radio Tower",
+   "file": "radio_tower.png",
+   "w": 12,
+   "h": 12,
+   "count": 41,
+   "px": 0.4,
+   "sliceH": 1.0,
+   "solid": true,
+   "radius": 1.6,
+   "kind": "landmark",
+   "breakable": false,
+   "emissive": "radio_tower_emit.png",
+   "footprint": [
+    4.0,
+    4.0
+   ],
+   "height": 41.0,
+   "desc": "40 m red-and-white triangular lattice radio mast with aviation beacons (emissive)."
+  },
+  {
+   "id": "cell_tower",
+   "name": "Cell Tower",
+   "file": "cell_tower.png",
+   "w": 20,
+   "h": 20,
+   "count": 38,
+   "px": 0.3,
+   "sliceH": 0.9,
+   "solid": true,
+   "radius": 1.2,
+   "kind": "landmark",
+   "breakable": false,
+   "footprint": [
+    5.4,
+    5.4
+   ],
+   "height": 34.2,
+   "desc": "35 m galvanised monopole with two triangular antenna arrays and a base cabinet."
+  },
+  {
+   "id": "oak_2",
+   "name": "Oak",
+   "file": "oak_2.png",
+   "w": 70,
+   "h": 62,
+   "count": 27,
+   "px": 0.2,
+   "sliceH": 0.35,
+   "solid": true,
+   "radius": 0.6,
+   "kind": "tree",
+   "breakable": false,
+   "group": "oak",
+   "footprint": [
+    13.6,
+    11.8
+   ],
+   "height": 9.45,
+   "desc": "Wide, low spreading oak, 9 m."
+  },
+  {
+   "id": "oak_3",
+   "name": "Oak",
+   "file": "oak_3.png",
+   "w": 44,
+   "h": 54,
+   "count": 36,
+   "px": 0.2,
+   "sliceH": 0.35,
+   "solid": true,
+   "radius": 0.55,
+   "kind": "tree",
+   "breakable": false,
+   "group": "oak",
+   "footprint": [
+    8.4,
+    10.4
+   ],
+   "height": 12.6,
+   "desc": "Tall rounded oak with a slightly leaning crown, 12.5 m."
+  },
+  {
+   "id": "elm",
+   "name": "American Elm",
+   "file": "elm.png",
+   "w": 74,
+   "h": 74,
+   "count": 39,
+   "px": 0.2,
+   "sliceH": 0.35,
+   "solid": true,
+   "radius": 0.5,
+   "kind": "tree",
+   "breakable": false,
+   "footprint": [
+    14.4,
+    14.4
+   ],
+   "height": 13.65,
+   "desc": "Vase-shaped elm: limbs fork low and fan out into a broad high crown, 14 m."
+  },
+  {
+   "id": "cottonwood",
+   "name": "Cottonwood",
+   "file": "cottonwood.png",
+   "w": 54,
+   "h": 54,
+   "count": 39,
+   "px": 0.25,
+   "sliceH": 0.5,
+   "solid": true,
+   "radius": 0.8,
+   "kind": "tree",
+   "breakable": false,
+   "footprint": [
+    13.0,
+    12.75
+   ],
+   "height": 19.5,
+   "desc": "Tall riverbank cottonwood with a pale trunk and loose bright crown, 20 m."
+  },
+  {
+   "id": "redbud",
+   "name": "Eastern Redbud",
+   "file": "redbud.png",
+   "w": 34,
+   "h": 38,
+   "count": 24,
+   "px": 0.2,
+   "sliceH": 0.25,
+   "solid": true,
+   "radius": 0.35,
+   "kind": "tree",
+   "breakable": false,
+   "footprint": [
+    6.4,
+    7.0
+   ],
+   "height": 6.0,
+   "desc": "Oklahoma state tree in spring bloom: small multi-stem tree covered in pink-magenta blossoms, 6 m."
+  },
+  {
+   "id": "eastern_red_cedar_1",
+   "name": "Eastern Red Cedar",
+   "file": "eastern_red_cedar_1.png",
+   "w": 24,
+   "h": 22,
+   "count": 22,
+   "px": 0.2,
+   "sliceH": 0.35,
+   "solid": true,
+   "radius": 0.4,
+   "kind": "tree",
+   "breakable": false,
+   "group": "eastern_red_cedar",
+   "footprint": [
+    4.2,
+    3.8
+   ],
+   "height": 7.7,
+   "desc": "Dark conical juniper that covers Oklahoma pastures, 8 m."
+  },
+  {
+   "id": "eastern_red_cedar_2",
+   "name": "Eastern Red Cedar",
+   "file": "eastern_red_cedar_2.png",
+   "w": 18,
+   "h": 18,
+   "count": 14,
+   "px": 0.2,
+   "sliceH": 0.35,
+   "solid": true,
+   "radius": 0.4,
+   "kind": "tree",
+   "breakable": false,
+   "group": "eastern_red_cedar",
+   "footprint": [
+    3.2,
+    3.2
+   ],
+   "height": 4.9,
+   "desc": "Young bushy red cedar, 5 m."
+  },
+  {
+   "id": "post_oak",
+   "name": "Post Oak",
+   "file": "post_oak.png",
+   "w": 40,
+   "h": 40,
+   "count": 19,
+   "px": 0.2,
+   "sliceH": 0.35,
+   "solid": true,
+   "radius": 0.45,
+   "kind": "tree",
+   "breakable": false,
+   "footprint": [
+    7.4,
+    7.4
+   ],
+   "height": 6.65,
+   "desc": "Scrubby Cross Timbers post oak: crooked limbs and separate leaf clumps, 7 m."
+  },
+  {
+   "id": "pine",
+   "name": "Shortleaf Pine",
+   "file": "pine.png",
+   "w": 40,
+   "h": 42,
+   "count": 36,
+   "px": 0.2,
+   "sliceH": 0.45,
+   "solid": true,
+   "radius": 0.4,
+   "kind": "tree",
+   "breakable": false,
+   "footprint": [
+    7.4,
+    7.8
+   ],
+   "height": 16.2,
+   "desc": "Tall straight pine with a tufted crown, 16 m."
+  },
+  {
+   "id": "dead_tree",
+   "name": "Dead Tree",
+   "file": "dead_tree.png",
+   "w": 38,
+   "h": 24,
+   "count": 27,
+   "px": 0.2,
+   "sliceH": 0.35,
+   "solid": true,
+   "radius": 0.4,
+   "kind": "tree",
+   "breakable": false,
+   "footprint": [
+    7.2,
+    4.4
+   ],
+   "height": 9.45,
+   "desc": "Bare, sun-bleached dead tree (drought / storm-killed), 9 m."
+  },
+  {
+   "id": "bush_1",
+   "name": "Bush",
+   "file": "bush_1.png",
+   "w": 18,
+   "h": 18,
+   "count": 9,
+   "px": 0.1,
+   "sliceH": 0.15,
+   "solid": true,
+   "radius": 0.6,
+   "kind": "tree",
+   "breakable": false,
+   "group": "bush",
+   "footprint": [
+    1.5,
+    1.6
+   ],
+   "height": 1.35,
+   "desc": "Round shrub, 1.6 m."
+  },
+  {
+   "id": "bush_2",
+   "name": "Hedge Bush",
+   "file": "bush_2.png",
+   "w": 26,
+   "h": 12,
+   "count": 8,
+   "px": 0.1,
+   "sliceH": 0.15,
+   "solid": true,
+   "radius": 0.6,
+   "kind": "tree",
+   "breakable": false,
+   "group": "bush",
+   "footprint": [
+    2.4,
+    1.0
+   ],
+   "height": 1.2,
+   "desc": "Long clipped hedge segment, 2.6 m."
+  },
+  {
+   "id": "bush_3",
+   "name": "Flowering Bush",
+   "file": "bush_3.png",
+   "w": 20,
+   "h": 20,
+   "count": 12,
+   "px": 0.1,
+   "sliceH": 0.15,
+   "solid": true,
+   "radius": 0.6,
+   "kind": "tree",
+   "breakable": false,
+   "group": "bush",
+   "footprint": [
+    1.8,
+    1.7
+   ],
+   "height": 1.8,
+   "desc": "Crape-myrtle style flowering shrub with pink blooms, 1.9 m."
+  },
+  {
+   "id": "tall_grass_clump",
+   "name": "Tall Grass",
+   "file": "tall_grass_clump.png",
+   "w": 28,
+   "h": 30,
+   "count": 13,
+   "px": 0.05,
+   "sliceH": 0.1,
+   "solid": false,
+   "radius": 0,
+   "kind": "tree",
+   "breakable": false,
+   "footprint": [
+    1.25,
+    1.4
+   ],
+   "height": 1.3,
+   "desc": "Tallgrass-prairie bunch (big bluestem / switchgrass) with bronze seed heads, 1.3 m. Walk/drive-through."
+  },
+  {
+   "id": "hay_bale_round",
+   "name": "Round Hay Bale",
+   "file": "hay_bale_round.png",
+   "w": 16,
+   "h": 18,
+   "count": 16,
+   "px": 0.1,
+   "sliceH": 0.1,
+   "solid": true,
+   "radius": 0.8,
+   "kind": "rural",
+   "breakable": false,
+   "footprint": [
+    1.3,
+    1.6
+   ],
+   "height": 1.6,
+   "desc": "1.6 m round bale lying on its side (axis along x)."
+  },
+  {
+   "id": "hay_bale_square",
+   "name": "Square Hay Bale",
+   "file": "hay_bale_square.png",
+   "w": 14,
+   "h": 26,
+   "count": 9,
+   "px": 0.1,
+   "sliceH": 0.1,
+   "solid": true,
+   "radius": 0.7,
+   "kind": "rural",
+   "breakable": false,
+   "footprint": [
+    1.2,
+    2.4
+   ],
+   "height": 0.9,
+   "desc": "Large 2.4 x 1.2 x 0.9 m square bale with twine."
+  },
+  {
+   "id": "cow_hereford",
+   "name": "Hereford Cow",
+   "file": "cow_hereford.png",
+   "w": 12,
+   "h": 30,
+   "count": 14,
+   "px": 0.1,
+   "sliceH": 0.1,
+   "solid": true,
+   "radius": 0.8,
+   "kind": "rural",
+   "breakable": false,
+   "group": "cow",
+   "footprint": [
+    1.0,
+    2.8
+   ],
+   "height": 1.4,
+   "animal": true,
+   "desc": "Red-and-white-faced Hereford beef cow, 2.5 m. Faces +y."
+  },
+  {
+   "id": "cow_angus",
+   "name": "Angus Cow",
+   "file": "cow_angus.png",
+   "w": 12,
+   "h": 30,
+   "count": 14,
+   "px": 0.1,
+   "sliceH": 0.1,
+   "solid": true,
+   "radius": 0.8,
+   "kind": "rural",
+   "breakable": false,
+   "group": "cow",
+   "footprint": [
+    1.0,
+    2.8
+   ],
+   "height": 1.4,
+   "animal": true,
+   "desc": "Black Angus beef cow, 2.5 m. Faces +y."
+  },
+  {
+   "id": "horse",
+   "name": "Horse",
+   "file": "horse.png",
+   "w": 10,
+   "h": 30,
+   "count": 22,
+   "px": 0.1,
+   "sliceH": 0.1,
+   "solid": true,
+   "radius": 0.8,
+   "kind": "rural",
+   "breakable": false,
+   "footprint": [
+    0.8,
+    2.7
+   ],
+   "height": 2.2,
+   "animal": true,
+   "desc": "Bay quarter horse with black mane, tail and socks, 2.4 m. Faces +y."
+  },
+  {
+   "id": "bison",
+   "name": "American Bison",
+   "file": "bison.png",
+   "w": 12,
+   "h": 32,
+   "count": 19,
+   "px": 0.1,
+   "sliceH": 0.1,
+   "solid": true,
+   "radius": 1.0,
+   "kind": "rural",
+   "breakable": false,
+   "footprint": [
+    1.0,
+    2.9
+   ],
+   "height": 1.9,
+   "animal": true,
+   "desc": "Tallgrass-prairie bison (Osage County): shaggy humped front, short horns, 3 m. Faces +y."
+  },
+  {
+   "id": "traffic_light_red",
+   "name": "Traffic Light (red)",
+   "file": "traffic_light_red.png",
+   "w": 78,
+   "h": 8,
+   "count": 33,
+   "px": 0.125,
+   "sliceH": 0.2,
+   "solid": true,
+   "radius": 0.25,
+   "kind": "street",
+   "breakable": false,
+   "emissive": "traffic_light_red_emit.png",
+   "group": "traffic_light",
+   "footprint": [
+    5.12,
+    0.75
+   ],
+   "height": 6.6,
+   "state": "red",
+   "pivot": "pole",
+   "desc": "Mast-arm signal, red lit. Arm reaches 4.7 m along +x over the lanes; heads face +y. Swap between the three files to change state; lit lens is in the emissive strip."
+  },
+  {
+   "id": "traffic_light_yellow",
+   "name": "Traffic Light (yellow)",
+   "file": "traffic_light_yellow.png",
+   "w": 78,
+   "h": 8,
+   "count": 33,
+   "px": 0.125,
+   "sliceH": 0.2,
+   "solid": true,
+   "radius": 0.25,
+   "kind": "street",
+   "breakable": false,
+   "emissive": "traffic_light_yellow_emit.png",
+   "group": "traffic_light",
+   "footprint": [
+    5.12,
+    0.75
+   ],
+   "height": 6.6,
+   "state": "yellow",
+   "pivot": "pole",
+   "desc": "Mast-arm signal, yellow lit. Arm reaches 4.7 m along +x over the lanes; heads face +y. Swap between the three files to change state; lit lens is in the emissive strip."
+  },
+  {
+   "id": "traffic_light_green",
+   "name": "Traffic Light (green)",
+   "file": "traffic_light_green.png",
+   "w": 78,
+   "h": 8,
+   "count": 33,
+   "px": 0.125,
+   "sliceH": 0.2,
+   "solid": true,
+   "radius": 0.25,
+   "kind": "street",
+   "breakable": false,
+   "emissive": "traffic_light_green_emit.png",
+   "group": "traffic_light",
+   "footprint": [
+    5.12,
+    0.75
+   ],
+   "height": 6.6,
+   "state": "green",
+   "pivot": "pole",
+   "desc": "Mast-arm signal, green lit. Arm reaches 4.7 m along +x over the lanes; heads face +y. Swap between the three files to change state; lit lens is in the emissive strip."
+  },
+  {
+   "id": "stop_sign",
+   "name": "Stop Sign",
+   "file": "stop_sign.png",
+   "w": 18,
+   "h": 8,
+   "count": 25,
+   "px": 0.05,
+   "sliceH": 0.1,
+   "solid": true,
+   "radius": 0.1,
+   "kind": "sign",
+   "breakable": true,
+   "footprint": [
+    0.8,
+    0.2
+   ],
+   "height": 2.5,
+   "desc": "Octagonal red stop sign on a 2.2 m post, face toward +y."
+  },
+  {
+   "id": "fire_hydrant",
+   "name": "Fire Hydrant",
+   "file": "fire_hydrant.png",
+   "w": 14,
+   "h": 12,
+   "count": 16,
+   "px": 0.05,
+   "sliceH": 0.05,
+   "solid": true,
+   "radius": 0.25,
+   "kind": "street",
+   "breakable": true,
+   "footprint": [
+    0.6,
+    0.5
+   ],
+   "height": 0.8,
+   "onBreak": "water_jet",
+   "desc": "Red fire hydrant with silver caps, 0.8 m."
+  },
+  {
+   "id": "mailbox",
+   "name": "Mail Collection Box",
+   "file": "mailbox.png",
+   "w": 14,
+   "h": 12,
+   "count": 26,
+   "px": 0.05,
+   "sliceH": 0.05,
+   "solid": true,
+   "radius": 0.35,
+   "kind": "street",
+   "breakable": false,
+   "footprint": [
+    0.6,
+    0.5
+   ],
+   "height": 1.3,
+   "desc": "Blue curbside mail collection box (no insignia), pull-down chute facing +y."
+  },
+  {
+   "id": "residential_mailbox",
+   "name": "Mailbox on Post",
+   "file": "residential_mailbox.png",
+   "w": 10,
+   "h": 14,
+   "count": 26,
+   "px": 0.05,
+   "sliceH": 0.05,
+   "solid": true,
+   "radius": 0.15,
+   "kind": "street",
+   "breakable": true,
+   "footprint": [
+    0.35,
+    0.6
+   ],
+   "height": 1.3,
+   "desc": "Rural/residential mailbox on a wooden post with a raised red flag; door faces +y."
+  },
+  {
+   "id": "bench",
+   "name": "Park Bench",
+   "file": "bench.png",
+   "w": 20,
+   "h": 10,
+   "count": 9,
+   "px": 0.1,
+   "sliceH": 0.1,
+   "solid": true,
+   "radius": 0.6,
+   "kind": "street",
+   "breakable": true,
+   "footprint": [
+    1.8,
+    0.7
+   ],
+   "height": 0.9,
+   "desc": "Slatted wooden bench with cast-iron ends; seat faces +y."
+  },
+  {
+   "id": "trash_can",
+   "name": "Trash Can",
+   "file": "trash_can.png",
+   "w": 14,
+   "h": 14,
+   "count": 19,
+   "px": 0.05,
+   "sliceH": 0.05,
+   "solid": true,
+   "radius": 0.3,
+   "kind": "street",
+   "breakable": true,
+   "footprint": [
+    0.6,
+    0.6
+   ],
+   "height": 0.95,
+   "desc": "Round dark-green slatted metal litter bin with an open top."
+  },
+  {
+   "id": "newspaper_box",
+   "name": "Newspaper Box",
+   "file": "newspaper_box.png",
+   "w": 12,
+   "h": 12,
+   "count": 22,
+   "px": 0.05,
+   "sliceH": 0.05,
+   "solid": true,
+   "radius": 0.3,
+   "kind": "street",
+   "breakable": true,
+   "footprint": [
+    0.5,
+    0.45
+   ],
+   "height": 1.1,
+   "desc": "Yellow coin-op newspaper vending box with a window, door faces +y."
+  },
+  {
+   "id": "payphone",
+   "name": "Payphone",
+   "file": "payphone.png",
+   "w": 14,
+   "h": 14,
+   "count": 29,
+   "px": 0.05,
+   "sliceH": 0.075,
+   "solid": true,
+   "radius": 0.3,
+   "kind": "street",
+   "breakable": false,
+   "emissive": "payphone_emit.png",
+   "footprint": [
+    0.6,
+    0.55
+   ],
+   "height": 2.17,
+   "interact": "phone",
+   "desc": "Classic pole-mounted payphone (no booth) with a bright yellow lit 'phone' sign; used for missions. Faces +y."
+  },
+  {
+   "id": "bus_stop_shelter",
+   "name": "Bus Stop Shelter",
+   "file": "bus_stop_shelter.png",
+   "w": 46,
+   "h": 22,
+   "count": 25,
+   "px": 0.1,
+   "sliceH": 0.1,
+   "solid": true,
+   "radius": 1.0,
+   "kind": "street",
+   "breakable": false,
+   "emissive": "bus_stop_shelter_emit.png",
+   "footprint": [
+    4.4,
+    1.9
+   ],
+   "height": 2.5,
+   "collision": "back_wall",
+   "desc": "Glass bus shelter with bench and lit ad panel; open side faces +y (the curb)."
+  },
+  {
+   "id": "parking_meter",
+   "name": "Parking Meter",
+   "file": "parking_meter.png",
+   "w": 6,
+   "h": 6,
+   "count": 28,
+   "px": 0.05,
+   "sliceH": 0.05,
+   "solid": true,
+   "radius": 0.12,
+   "kind": "street",
+   "breakable": true,
+   "footprint": [
+    0.2,
+    0.2
+   ],
+   "height": 1.4,
+   "desc": "Single-head coin parking meter with a red expired flag, face toward +y."
+  },
+  {
+   "id": "gas_station_pump",
+   "name": "Gas Pump",
+   "file": "gas_station_pump.png",
+   "w": 40,
+   "h": 20,
+   "count": 29,
+   "px": 0.05,
+   "sliceH": 0.075,
+   "solid": true,
+   "radius": 0.6,
+   "kind": "street",
+   "breakable": false,
+   "emissive": "gas_station_pump_emit.png",
+   "footprint": [
+    1.9,
+    0.9
+   ],
+   "height": 2.17,
+   "explosive": true,
+   "desc": "Modern double-sided fuel dispenser on its island with bumper posts, lit header and screens."
+  },
+  {
+   "id": "gas_station_canopy",
+   "name": "Gas Station Canopy",
+   "file": "gas_station_canopy.png",
+   "w": 84,
+   "h": 44,
+   "count": 22,
+   "px": 0.25,
+   "sliceH": 0.25,
+   "solid": false,
+   "radius": 0,
+   "kind": "street",
+   "breakable": false,
+   "emissive": "gas_station_canopy_emit.png",
+   "footprint": [
+    20.5,
+    10.5
+   ],
+   "height": 5.5,
+   "overhead": true,
+   "colliders": [
+    [
+     -5.0,
+     0.0,
+     0.35
+    ],
+    [
+     5.0,
+     0.0,
+     0.35
+    ]
+   ],
+   "desc": "20 x 10 m flat fuel canopy, 4.5 m clearance, two columns on the pump-island centreline (see colliders). Lit fascia stripe. Draw above cars; fade when the player is under it."
+  },
+  {
+   "id": "billboard",
+   "name": "Billboard",
+   "file": "billboard.png",
+   "w": 54,
+   "h": 10,
+   "count": 35,
+   "px": 0.2,
+   "sliceH": 0.3,
+   "solid": true,
+   "radius": 0.5,
+   "kind": "sign",
+   "breakable": false,
+   "emissive": "billboard_emit.png",
+   "footprint": [
+    10.4,
+    1.6
+   ],
+   "height": 10.5,
+   "desc": "Roadside billboard on two poles with a colourful fictional burger ad (front, +y) and lit catwalk."
+  },
+  {
+   "id": "traffic_cone",
+   "name": "Traffic Cone",
+   "file": "traffic_cone.png",
+   "w": 10,
+   "h": 10,
+   "count": 14,
+   "px": 0.05,
+   "sliceH": 0.05,
+   "solid": false,
+   "radius": 0,
+   "kind": "street",
+   "breakable": true,
+   "footprint": [
+    0.4,
+    0.4
+   ],
+   "height": 0.7,
+   "desc": "Orange traffic cone with a reflective band, 0.7 m. Walk/drive-through, gets knocked over."
+  },
+  {
+   "id": "barricade",
+   "name": "Police Barricade",
+   "file": "barricade.png",
+   "w": 44,
+   "h": 16,
+   "count": 24,
+   "px": 0.05,
+   "sliceH": 0.05,
+   "solid": true,
+   "radius": 0.4,
+   "kind": "street",
+   "breakable": true,
+   "emissive": "barricade_emit.png",
+   "footprint": [
+    2.1,
+    0.7
+   ],
+   "height": 1.2,
+   "roadblock": true,
+   "desc": "Sawhorse roadblock barricade with orange/white diagonal stripes and a flashing amber lamp."
+  },
+  {
+   "id": "jersey_barrier",
+   "name": "Jersey Barrier",
+   "file": "jersey_barrier.png",
+   "w": 62,
+   "h": 14,
+   "count": 16,
+   "px": 0.05,
+   "sliceH": 0.05,
+   "solid": true,
+   "radius": 0.4,
+   "kind": "street",
+   "breakable": false,
+   "footprint": [
+    3.0,
+    0.6
+   ],
+   "height": 0.8,
+   "box": [
+    3.0,
+    0.6
+   ],
+   "desc": "3 m precast concrete Jersey barrier, long axis along x."
+  },
+  {
+   "id": "picnic_table",
+   "name": "Picnic Table",
+   "file": "picnic_table.png",
+   "w": 20,
+   "h": 18,
+   "count": 8,
+   "px": 0.1,
+   "sliceH": 0.1,
+   "solid": true,
+   "radius": 0.8,
+   "kind": "street",
+   "breakable": true,
+   "footprint": [
+    1.8,
+    1.6
+   ],
+   "height": 0.8,
+   "desc": "Wooden park picnic table with attached benches."
+  },
+  {
+   "id": "playground_slide",
+   "name": "Playground Slide",
+   "file": "playground_slide.png",
+   "w": 12,
+   "h": 40,
+   "count": 22,
+   "px": 0.1,
+   "sliceH": 0.1,
+   "solid": true,
+   "radius": 0.9,
+   "kind": "street",
+   "breakable": false,
+   "footprint": [
+    1.0,
+    3.8
+   ],
+   "height": 2.2,
+   "desc": "Kids' slide: ladder at the back, guarded platform, yellow chute sloping down toward +y."
+  },
+  {
+   "id": "basketball_hoop",
+   "name": "Basketball Hoop",
+   "file": "basketball_hoop.png",
+   "w": 20,
+   "h": 36,
+   "count": 39,
+   "px": 0.1,
+   "sliceH": 0.1,
+   "solid": true,
+   "radius": 0.2,
+   "kind": "street",
+   "breakable": false,
+   "footprint": [
+    1.8,
+    2.0
+   ],
+   "height": 3.9,
+   "pivot": "pole",
+   "desc": "Driveway/park basketball hoop: pole at the pivot, backboard and rim toward +y."
+  },
+  {
+   "id": "portapotty",
+   "name": "Porta-Potty",
+   "file": "portapotty.png",
+   "w": 14,
+   "h": 14,
+   "count": 23,
+   "px": 0.1,
+   "sliceH": 0.1,
+   "solid": true,
+   "radius": 0.6,
+   "kind": "street",
+   "breakable": false,
+   "footprint": [
+    1.2,
+    1.2
+   ],
+   "height": 2.3,
+   "desc": "Blue portable toilet with a white roof and vented door facing +y."
+  },
+  {
+   "id": "construction_crane",
+   "name": "Tower Crane",
+   "file": "construction_crane.png",
+   "w": 122,
+   "h": 14,
+   "count": 43,
+   "px": 0.5,
+   "sliceH": 1.0,
+   "solid": true,
+   "radius": 1.6,
+   "kind": "misc",
+   "breakable": false,
+   "footprint": [
+    41.0,
+    6.0
+   ],
+   "height": 43.0,
+   "pivot": "mast",
+   "desc": "Coarse yellow tower crane: 38 m mast at the pivot, 30 m jib along +x, counter-jib with weights. Can be spun about its pivot."
+  },
+  {
+   "id": "utility_pole",
+   "name": "Utility Pole",
+   "file": "utility_pole.png",
+   "w": 22,
+   "h": 14,
+   "count": 36,
+   "px": 0.125,
+   "sliceH": 0.3,
+   "solid": true,
+   "radius": 0.2,
+   "kind": "street",
+   "breakable": false,
+   "footprint": [
+    2.5,
+    1.0
+   ],
+   "height": 10.8,
+   "pivot": "pole",
+   "desc": "Wooden power pole with two crossarms, insulators and a transformer can."
+  },
+  {
+   "id": "pickup_cash",
+   "name": "Cash",
+   "file": "pickup_cash.png",
+   "w": 20,
+   "h": 20,
+   "count": 12,
+   "px": 0.05,
+   "sliceH": 0.05,
+   "solid": false,
+   "radius": 0,
+   "kind": "pickup",
+   "breakable": false,
+   "emissive": "pickup_cash_emit.png",
+   "footprint": [
+    0.9,
+    0.9
+   ],
+   "height": 0.6,
+   "pickup": "cash",
+   "spin": true,
+   "desc": "Two crossed bundles of green bills with a paper band and a glowing '$'."
+  },
+  {
+   "id": "pickup_health",
+   "name": "Health",
+   "file": "pickup_health.png",
+   "w": 18,
+   "h": 18,
+   "count": 14,
+   "px": 0.05,
+   "sliceH": 0.05,
+   "solid": false,
+   "radius": 0,
+   "kind": "pickup",
+   "breakable": false,
+   "emissive": "pickup_health_emit.png",
+   "footprint": [
+    0.8,
+    0.8
+   ],
+   "height": 0.7,
+   "pickup": "health",
+   "spin": true,
+   "desc": "White first-aid box with a red cross on every face."
+  },
+  {
+   "id": "pickup_armor",
+   "name": "Body Armor",
+   "file": "pickup_armor.png",
+   "w": 16,
+   "h": 8,
+   "count": 16,
+   "px": 0.05,
+   "sliceH": 0.05,
+   "solid": false,
+   "radius": 0,
+   "kind": "pickup",
+   "breakable": false,
+   "emissive": "pickup_armor_emit.png",
+   "footprint": [
+    0.7,
+    0.3
+   ],
+   "height": 0.8,
+   "pickup": "armor",
+   "spin": true,
+   "desc": "Blue ballistic vest standing upright (shoulder straps, arm holes, chest plate)."
+  },
+  {
+   "id": "pickup_weapon_crate",
+   "name": "Weapon Crate",
+   "file": "pickup_weapon_crate.png",
+   "w": 26,
+   "h": 14,
+   "count": 10,
+   "px": 0.05,
+   "sliceH": 0.05,
+   "solid": false,
+   "radius": 0,
+   "kind": "pickup",
+   "breakable": false,
+   "emissive": "pickup_weapon_crate_emit.png",
+   "footprint": [
+    1.2,
+    0.6
+   ],
+   "height": 0.5,
+   "pickup": "weapon",
+   "spin": true,
+   "desc": "Olive-drab ammo/weapon crate with steel corners, rope handles and a yellow rifle stencil."
+  },
+  {
+   "id": "pickup_package",
+   "name": "Hidden Package",
+   "file": "pickup_package.png",
+   "w": 16,
+   "h": 12,
+   "count": 10,
+   "px": 0.05,
+   "sliceH": 0.05,
+   "solid": false,
+   "radius": 0,
+   "kind": "pickup",
+   "breakable": false,
+   "footprint": [
+    0.7,
+    0.5
+   ],
+   "height": 0.5,
+   "pickup": "package",
+   "collectible": true,
+   "spin": true,
+   "desc": "Taped brown cardboard parcel with a shipping label - the hidden-package collectible."
+  },
+  {
+   "id": "pickup_rampage",
+   "name": "Rampage Token",
+   "file": "pickup_rampage.png",
+   "w": 20,
+   "h": 6,
+   "count": 20,
+   "px": 0.05,
+   "sliceH": 0.05,
+   "solid": false,
+   "radius": 0,
+   "kind": "pickup",
+   "breakable": false,
+   "emissive": "pickup_rampage_emit.png",
+   "footprint": [
+    0.9,
+    0.2
+   ],
+   "height": 1.0,
+   "pickup": "rampage",
+   "spin": true,
+   "desc": "Glowing red coin token with a white '!' on both faces - starts a rampage challenge."
+  },
+  {
+   "id": "pickup_bribe",
+   "name": "Bribe Star",
+   "file": "pickup_bribe.png",
+   "w": 20,
+   "h": 6,
+   "count": 20,
+   "px": 0.05,
+   "sliceH": 0.05,
+   "solid": false,
+   "radius": 0,
+   "kind": "pickup",
+   "breakable": false,
+   "emissive": "pickup_bribe_emit.png",
+   "footprint": [
+    0.9,
+    0.2
+   ],
+   "height": 1.0,
+   "pickup": "bribe",
+   "spin": true,
+   "desc": "Generic gold six-point star badge token (no insignia); lowers the wanted level."
+  },
+  {
+   "id": "car_wreck",
+   "name": "Burnt-out Car",
+   "file": "car_wreck.png",
+   "w": 20,
+   "h": 48,
+   "count": 14,
+   "px": 0.1,
+   "sliceH": 0.1,
+   "solid": true,
+   "radius": 1.3,
+   "kind": "misc",
+   "breakable": false,
+   "footprint": [
+    1.8,
+    4.6
+   ],
+   "height": 1.4,
+   "box": [
+    1.8,
+    4.5
+   ],
+   "desc": "Generic burnt-out sedan husk on its rims: charred shell, rust, gutted cabin. Nose +y."
+  },
+  {
+   "id": "tire_stack",
+   "name": "Tire Stack",
+   "file": "tire_stack.png",
+   "w": 16,
+   "h": 16,
+   "count": 18,
+   "px": 0.05,
+   "sliceH": 0.05,
+   "solid": true,
+   "radius": 0.4,
+   "kind": "misc",
+   "breakable": false,
+   "footprint": [
+    0.7,
+    0.7
+   ],
+   "height": 0.9,
+   "desc": "Stack of four worn tyres (junkyards, tyre shops)."
+  },
+  {
+   "id": "oil_barrel",
+   "name": "Oil Drum",
+   "file": "oil_barrel.png",
+   "w": 14,
+   "h": 14,
+   "count": 18,
+   "px": 0.05,
+   "sliceH": 0.05,
+   "solid": true,
+   "radius": 0.3,
+   "kind": "misc",
+   "breakable": true,
+   "footprint": [
+    0.6,
+    0.6
+   ],
+   "height": 0.9,
+   "explosive": true,
+   "desc": "Red 55-gallon steel drum with rolling hoops (explodes when shot)."
+  },
+  {
+   "id": "pallet_stack",
+   "name": "Pallet Stack",
+   "file": "pallet_stack.png",
+   "w": 28,
+   "h": 24,
+   "count": 15,
+   "px": 0.05,
+   "sliceH": 0.05,
+   "solid": true,
+   "radius": 0.55,
+   "kind": "misc",
+   "breakable": true,
+   "footprint": [
+    1.3,
+    1.05
+   ],
+   "height": 0.75,
+   "desc": "Stack of five wooden shipping pallets, slightly askew."
+  },
+  {
+   "id": "shipping_container_red",
+   "name": "Shipping Container (red)",
+   "file": "shipping_container_red.png",
+   "w": 26,
+   "h": 64,
+   "count": 26,
+   "px": 0.1,
+   "sliceH": 0.1,
+   "solid": true,
+   "radius": 1.3,
+   "kind": "misc",
+   "breakable": false,
+   "group": "shipping_container",
+   "footprint": [
+    2.4,
+    6.1
+   ],
+   "height": 2.6,
+   "box": [
+    2.44,
+    6.1
+   ],
+   "desc": "20 ft corrugated steel shipping container, red (Tulsa Port of Catoosa). Doors at -y."
+  },
+  {
+   "id": "shipping_container_blue",
+   "name": "Shipping Container (blue)",
+   "file": "shipping_container_blue.png",
+   "w": 26,
+   "h": 64,
+   "count": 26,
+   "px": 0.1,
+   "sliceH": 0.1,
+   "solid": true,
+   "radius": 1.3,
+   "kind": "misc",
+   "breakable": false,
+   "group": "shipping_container",
+   "footprint": [
+    2.4,
+    6.1
+   ],
+   "height": 2.6,
+   "box": [
+    2.44,
+    6.1
+   ],
+   "desc": "20 ft corrugated steel shipping container, blue (Tulsa Port of Catoosa). Doors at -y."
+  },
+  {
+   "id": "shipping_container_green",
+   "name": "Shipping Container (green)",
+   "file": "shipping_container_green.png",
+   "w": 26,
+   "h": 64,
+   "count": 26,
+   "px": 0.1,
+   "sliceH": 0.1,
+   "solid": true,
+   "radius": 1.3,
+   "kind": "misc",
+   "breakable": false,
+   "group": "shipping_container",
+   "footprint": [
+    2.4,
+    6.1
+   ],
+   "height": 2.6,
+   "box": [
+    2.44,
+    6.1
+   ],
+   "desc": "20 ft corrugated steel shipping container, green (Tulsa Port of Catoosa). Doors at -y."
+  },
+  {
+   "id": "barge_crate",
+   "name": "Cargo Crate",
+   "file": "barge_crate.png",
+   "w": 22,
+   "h": 18,
+   "count": 15,
+   "px": 0.1,
+   "sliceH": 0.1,
+   "solid": true,
+   "radius": 0.9,
+   "kind": "misc",
+   "breakable": false,
+   "footprint": [
+    2.0,
+    1.6
+   ],
+   "height": 1.5,
+   "desc": "Large wooden cargo crate with braced sides and stencil marks (Port of Catoosa barge freight)."
+  },
+  {
+   "id": "boat_dock_post",
+   "name": "Dock Piling",
+   "file": "boat_dock_post.png",
+   "w": 12,
+   "h": 12,
+   "count": 30,
+   "px": 0.05,
+   "sliceH": 0.05,
+   "solid": true,
+   "radius": 0.25,
+   "kind": "misc",
+   "breakable": false,
+   "footprint": [
+    0.5,
+    0.5
+   ],
+   "height": 1.5,
+   "desc": "Weathered wooden mooring piling with rope wraps and a waterline algae band."
+  }
+ ]
+}
