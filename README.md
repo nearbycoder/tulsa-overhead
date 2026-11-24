@@ -1,4 +1,4 @@
-<img src="assets/icon.svg" width="64" height="64" alt="">
+[![Tulsa Overhead artwork showing a getaway on the streets of Tulsa](site/media/key-art.jpg)](https://nearbycoder.github.io/tulsa-overhead/)
 
 # Tulsa Overhead
 
@@ -19,6 +19,12 @@ npm start            # zero-dependency static server -> http://localhost:8137
 ```
 
 Open the URL in Chrome, Edge, Firefox or Safari. On a phone or tablet, connect to the same Wi-Fi as the computer running the game and open the Wi-Fi address printed by `npm start`. Tap or click to enable audio. Saves belong to the browser and address used to play.
+
+### Publishing the website
+
+The GitHub Pages workflow publishes the marketing site from `site/` at the project root and the playable game at `play/`. Pushing website, game source or artwork changes to `main` rebuilds the site. The workflow downloads the generated map and voice assets from the pinned Overview release. When those assets change, publish a new Overview ZIP and update the release tag in `.github/workflows/pages.yml`.
+
+To reproduce the deployment locally, run `python3 tools/build_pages.py /path/to/Tulsa-Overhead-Overview.zip` and serve `build/pages/` with a static web server.
 
 ### Playing on a touchscreen
 

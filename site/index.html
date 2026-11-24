@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111b20">
+  <meta name="description" content="Play Tulsa Overhead, a top-down crime game set on the real streets of northeastern Oklahoma. Follow getaway driver Polly Haskins across eight counties.">
+  <meta property="og:title" content="Tulsa Overhead">
+  <meta property="og:description" content="An Oklahoma getaway story. Play the top-down crime game in your browser.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://nearbycoder.github.io/tulsa-overhead/">
+  <meta property="og:image" content="https://nearbycoder.github.io/tulsa-overhead/media/key-art.jpg">
+  <meta property="og:image:alt" content="An illustrated muscle car and police cruiser corner on the streets of Tulsa.">
+  <meta name="twitter:card" content="summary_large_image">
+  <title>Tulsa Overhead • Play the top-down Oklahoma crime game</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="./fonts/barlow-condensed-extrabold-italic.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="./style.css">
+  <script src="./gallery.js" defer></script>
+</head>
+<body id="top">
+  <a class="skip" href="#main">Skip to game</a>
+  <header class="masthead">
+    <div class="frame masthead-inner">
+      <a class="wordmark" href="#top" aria-label="Tulsa Overhead home"><span class="monogram" aria-hidden="true">T/O</span><span>Tulsa Overhead</span></a>
+      <nav aria-label="Main navigation">
+        <a class="nav-section" href="#story">Story</a>
+        <a class="nav-section" href="#screens">Screenshots</a>
+        <a class="nav-play" href="./play/"><span class="triangle" aria-hidden="true"></span> Play game</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+    <section class="hero" aria-labelledby="game-title">
+      <picture class="hero-art">
+        <source media="(max-width: 640px)" srcset="./media/key-art-small.webp">
+        <img src="./media/key-art.webp" alt="" width="1774" height="887" fetchpriority="high">
+      </picture>
+      <div class="frame hero-inner">
+        <div class="hero-copy">
+          <p class="kicker hero-kicker">A top-down crime game</p>
+          <h1 id="game-title"><span>Tulsa</span> <span>Overhead</span></h1>
+          <p class="pitch">Get behind the wheel as Polly Haskins, a getaway driver back on the real streets of northeastern Oklahoma.</p>
+          <a class="button" href="./play/"><span class="triangle" aria-hidden="true"></span> Play in browser</a>
+          <p class="devices">Keyboard, controller &amp; touch</p>
+        </div>
+      </div>
+    </section>
+    <div class="stats">
+      <dl class="frame">
+        <div><dt>Oklahoma counties</dt><dd>8</dd></div>
+        <div><dt>Story missions</dt><dd>35</dd></div>
+        <div><dt>Radio stations</dt><dd>7</dd></div>
+      </dl>
+    </div>
+    <section id="story" class="story section">
+      <div class="frame story-grid">
+        <div class="story-lead">
+          <p class="kicker">The story</p>
+          <h2>Six hours out.<br>Forty grand in debt.</h2>
+        </div>
+        <div class="story-body">
+          <p>Polly’s barely home on parole when Mama June calls in a favor. Cousin Dewey borrowed forty thousand from the Gusher Syndicate. Now they want his tire shop in Broken Arrow.</p>
+          <p>Pick up a ride in the Rose District and follow the money. Eight chapters take you down Route 66, onto the docks at Catoosa and into downtown Tulsa, where old oil money still owns the block.</p>
+        </div>
+      </div>
+    </section>
+    <section id="screens" class="screens section" aria-labelledby="screens-title">
+      <div class="frame">
+        <div class="gallery-intro">
+          <div>
+            <p class="kicker">Gameplay screenshots</p>
+            <h2 id="screens-title">Oklahoma from above.</h2>
+          </div>
+          <p>Mapped streets and buildings put every turn in its place. Choose a shot for a closer look.</p>
+        </div>
+        <div class="gallery">
+          <figure>
+            <a class="shot" href="./media/broken-arrow.webp" aria-label="Enlarge the Broken Arrow screenshot">
+              <img src="./media/broken-arrow-small.webp" width="600" height="360" loading="lazy" decoding="async" alt="Cars driving through a Broken Arrow intersection with buildings and a tree-lined plaza.">
+              <span class="expand" aria-hidden="true">＋</span>
+            </a>
+            <figcaption>Broken Arrow</figcaption>
+          </figure>
+          <figure>
+            <a class="shot" href="./media/tulsa.webp" aria-label="Enlarge the downtown Tulsa screenshot">
+              <img src="./media/tulsa-small.webp" width="600" height="375" loading="lazy" decoding="async" alt="City blocks and multistory rooftops seen from high above downtown Tulsa.">
+              <span class="expand" aria-hidden="true">＋</span>
+            </a>
+            <figcaption>Downtown Tulsa</figcaption>
+          </figure>
+          <figure>
+            <a class="shot" href="./media/catoosa.webp" aria-label="Enlarge the Catoosa depot screenshot">
+              <img src="./media/catoosa-small.webp" width="600" height="375" loading="lazy" decoding="async" alt="The long depot roof, grounds and surrounding trees in Catoosa.">
+              <span class="expand" aria-hidden="true">＋</span>
+            </a>
+            <figcaption>Catoosa depot</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="frame footer-inner">
+      <a class="wordmark" href="#top"><span class="monogram" aria-hidden="true">T/O</span><span>Tulsa Overhead</span></a>
+      <div class="footer-links">
+        <a href="https://github.com/nearbycoder/tulsa-overhead">Source on GitHub</a>
+        <a href="https://github.com/nearbycoder/tulsa-overhead#credits">Game &amp; data credits</a>
+        <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors</a>
+      </div>
+    </div>
+  </footer>
+  <dialog id="viewer" aria-labelledby="viewer-caption">
+    <div class="viewer-inner">
+      <div class="viewer-bar"><h2 id="viewer-caption"></h2><button id="viewer-close" type="button" autofocus>Close <span aria-hidden="true">×</span></button></div>
+      <img id="viewer-image" alt="">
+    </div>
+  </dialog>
+</body>
+</html>

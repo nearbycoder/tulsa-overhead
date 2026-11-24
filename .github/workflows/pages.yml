@@ -1,0 +1,52 @@
+name: Publish Tulsa Overhead
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'site/**'
+      - 'src/**'
+      - 'assets/**'
+      - 'index.html'
+      - 'tools/build_pages.py'
+      - 'tools/sprite-stacking/LICENSE'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Download the Overview game assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release download v0.1.0 --repo "$GITHUB_REPOSITORY" --pattern Tulsa-Overhead-Overview.zip --dir "$RUNNER_TEMP"
+      - name: Build the site and playable game
+        run: python3 tools/build_pages.py "$RUNNER_TEMP/Tulsa-Overhead-Overview.zip"
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: build/pages
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
