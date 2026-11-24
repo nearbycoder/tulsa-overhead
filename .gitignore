@@ -1,0 +1,10 @@
+.venv/
+node_modules/
+build/
+*.log
+.DS_Store
+__pycache__/
+*.py[cod]
+.ruff_cache/
+assets/map/
+assets/voice/
